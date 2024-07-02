@@ -33,6 +33,10 @@ public class RuleInstanceException extends Exception {
     return new RuleInstanceReturnResultException(message);
   }
 
+  public static RuleInstanceFunctionException functionException(String message) {
+    return new RuleInstanceFunctionException(message);
+  }
+
   /**
    * 不符合预期的规则实例异常
    */
@@ -88,6 +92,14 @@ public class RuleInstanceException extends Exception {
   public static class RuleInstanceReturnResultException extends RuleInstanceException {
 
     public RuleInstanceReturnResultException(String message) {
+      super(message);
+    }
+
+  }
+
+  public static class RuleInstanceFunctionException extends RuleInstanceException {
+
+    public RuleInstanceFunctionException(String message) {
       super(message);
     }
 

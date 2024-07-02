@@ -3,8 +3,14 @@ package group.devtool.conditional.engine;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 系统默认函数
+ */
 public enum Functions {
   PUT(new PutFunction()),
+  ADD(new AddFunction()),
+  LIST(new ListFunction()),
+  Map(new MapFunction()),
   ;
 
   private ConditionFunction<?> function;
@@ -25,5 +31,7 @@ public enum Functions {
     }
     return result;
   }
+
+
 
 }
