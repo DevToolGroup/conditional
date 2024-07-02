@@ -74,7 +74,7 @@ public class CodeLoaderTest {
   public void testErrorCodeLoader2() {
     CodeLoader loader = new CodeLoader();
     try {
-      int end = loader.load(0, error2, null);
+      loader.load(0, error2, null);
     } catch (RuleClassException e) {
       assertTrue(e instanceof RuleClassSyntaxException);
     }
@@ -85,7 +85,7 @@ public class CodeLoaderTest {
   public void testErrorCodeLoader3() {
     CodeLoader loader = new CodeLoader();
     try {
-      int end = loader.load(0, error3, null);
+      loader.load(0, error3, null);
     } catch (RuleClassException e) {
       assertTrue(e instanceof RuleClassSyntaxException);
     }

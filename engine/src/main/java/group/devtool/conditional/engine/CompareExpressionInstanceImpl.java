@@ -123,7 +123,12 @@ public class CompareExpressionInstanceImpl implements CompareExpressionInstance 
 
   @Override
   public String getExpressionString() {
-    return left.getExpressionString() + operation.name() + right.getExpressionString();
+    return left.getExpressionString() + operation.op() + right.getExpressionString();
+  }
+
+  @Override
+  public Compare getCompare() {
+    return operation;
   }
 
 }

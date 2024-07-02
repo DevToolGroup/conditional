@@ -1,9 +1,5 @@
 package group.devtool.conditional.engine;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+
+import group.devtool.conditional.engine.Token.TypeToken;
 
 /**
  * 基于规则文本的规则定义加载器
@@ -33,8 +31,10 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
   private RuleElementClassLoader loader;
 
-  public AbstractRuleClassLoader(InputStream inputStream) throws RuleClassException {
-    prepare(inputStream);
+  public AbstractRuleClassLoader(String dl) {
+    for (int i = 0; i < dl.length(); i++) {
+      characters.add(dl.charAt(i));
+    }
     this.loader = new RuleElementClassLoader();
   }
 
@@ -51,17 +51,6 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
    * @return 规则定义
    */
   protected abstract AbstractRuleClass buildRuleClass();
-
-  private void prepare(InputStream inputStream) throws RuleClassException {
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-      int c = -1;
-      while ((c = reader.read()) != -1) {
-        characters.add((char) c);
-      }
-    } catch (IOException e) {
-      throw RuleClassException.streamException(e.getMessage());
-    }
-  }
 
   public static boolean startWith(int pos, String pattern, List<Character> characters) {
     int offset = 0;
@@ -290,39 +279,16 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
     @Override
     protected void loaded(AbstractRuleClass ruleClass) throws RuleClassException {
-      Token typeToken = typeLoader.pop();
+      TypeToken typeToken = typeLoader.pop();
       Token codeToken = codeLoader.pop();
       Token nameToken = nameLoader.pop();
 
-      String type = typeToken.getValue();
-
-      String collectionType = type;
-      String componentType = null;
-
-      String keyType = null;
-      String valueType = null;
-
-      int begin = type.indexOf("<");
-      int end = type.indexOf(">");
-
-      if (begin != -1) {
-        collectionType = type.substring(0, begin).trim();
-        componentType = type.substring(begin + 1, end).trim();
-
-        valueType = componentType;
-        if (-1 != componentType.indexOf(",")) {
-          String[] kv = componentType.split(",");
-          if (kv.length != 2) {
-            throw RuleClassException.syntaxException("参数类型定义异常。参数定义：" + type);
-          }
-          keyType = kv[0];
-          valueType = kv[1];
-        }
-
-      }
-
-      stack.push(
-          new FactPropertyClassImpl(collectionType, keyType, valueType, codeToken.getValue(), nameToken.getValue()));
+      FactPropertyClassImpl property = new FactPropertyClassImpl(typeToken.getType(),
+          typeToken.getKeyType(),
+          typeToken.getValueType(),
+          codeToken.getValue(),
+          nameToken.getValue());
+      stack.push(property);
     }
 
   }
@@ -385,7 +351,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
       boolean loop = true;
       do {
-        Token argumentType = argumentTypeLoader.pop();
+        TypeToken argumentType = argumentTypeLoader.pop();
         Token argumentCode = argumentCodeLoader.pop();
         if (null == argumentType && null == argumentCode) {
           loop = false;
@@ -484,7 +450,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
     @Override
     protected int read(int offset, List<Character> characters) throws RuleClassException {
-      return readUntil(offset, LF.toString(), characters);
+      return readUntil(offset, LF.toString(), characters, true);
     }
 
     @Override
@@ -516,7 +482,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
     protected void loaded(AbstractRuleClass ruleClass) throws RuleClassException {
       boolean hasNext = true;
       do {
-        Token type = typeLoader.pop();
+        TypeToken type = typeLoader.pop();
         Token code = codeLoader.pop();
         Token name = nameLoader.pop();
         ExpressionToken expressionToken = expressionLoader.pop();
@@ -525,7 +491,9 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
           hasNext = false;
         } else if (null != type && null != code && null != name && null != expressionToken) {
           ExpressionClass expressionClass = new VariableExpressionClass(expressionToken.getTokens());
-          VariableClassImpl variable = new VariableClassImpl(type.getValue(),
+          VariableClassImpl variable = new VariableClassImpl(type.getType(),
+              type.getKeyType(),
+              type.getValueType(),
               code.getValue(),
               name.getValue(),
               expressionClass);
@@ -571,7 +539,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
     @Override
     protected int read(int offset, List<Character> characters) throws RuleClassException {
-      return readUntil(offset, END, characters);
+      return readUntil(offset, END, characters, true);
     }
 
     @Override
@@ -589,7 +557,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
         return Collections.singletonList((ElementClassLoader) actionLoader).iterator();
 
       } else if (before.equals(actionLoader)) {
-        return Arrays.asList((ElementClassLoader) actionLoader, endLoader).iterator();
+        return Arrays.asList(endLoader, (ElementClassLoader) actionLoader).iterator();
 
       } else {
         return Collections.emptyIterator();
@@ -645,8 +613,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
         } else if (character == COMMENT) {
           // 过滤 注释
-          index = readUntil(index, LF.toString(), characters);
-          index += 1;
+          index = readUntil(index, LF.toString(), characters, true);
 
         } else if ((childLoader = iterator.next()).support(index, subCharacters)) {
           index = childLoader.load(index, subCharacters, ruleClass);
@@ -654,6 +621,13 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
         } else {
           // do nothing
+        }
+      }
+      while (index < subCharacters.size()) {
+        Character character = subCharacters.get(index);
+        if (Character.isWhitespace(character) || character == LF) {
+          // 过滤 空格/换行
+          index += 1;
         }
       }
       if (index < subCharacters.size()) {
@@ -711,8 +685,8 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
     public int load(int offset, List<Character> characters, AbstractRuleClass ruleClass) throws RuleClassException {
       int end = offset;
       List<Token> tokens = new ArrayList<>();
-
-      while (end < characters.size()) {
+      int max = characters.size();
+      while (end < max) {
         Character character = characters.get(end);
         if (character == LF) {
           // 换行退出
@@ -749,7 +723,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
           int index = readDynamicEOF(end, (i, c) -> {
             return !Character.isDigit(c);
           }, characters);
-          if (characters.get(index) == '.') {
+          if (index < max && characters.get(index) == '.') {
             index = readDynamicEOF(index + 1, (i, c) -> {
               return !Character.isDigit(c);
             }, characters);
@@ -757,9 +731,9 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
             if (endChar != 'd' && endChar != 'f' && endChar != 'b') {
               throw RuleClassException.syntaxException(index, endChar.toString());
             }
-            index += 1;
+            // index += 1;
           }
-          index += 1;
+          // index += 1;
           tokens.add(new Token(characters.subList(end, index), TokenKind.NUMBER));
           end = index;
 
@@ -840,7 +814,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
           // 读取等于
           Character next = characters.get(end + 1);
           if (next == '=') {
-            tokens.add(new Token("<=", TokenKind.EQ));
+            tokens.add(new Token("==", TokenKind.EQ));
             end += 2;
           } else {
             throw RuleClassException.syntaxException(end, "==");
@@ -900,6 +874,9 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
           return index;
         }
         index += 1;
+      }
+      if (index == characters.size()) {
+        return index;
       }
       throw RuleClassException.syntaxException(offset, "未找到匹配的闭合字符");
     }
@@ -1009,9 +986,9 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
   /**
    * 类型加载器
    */
-  public static class TypeLoader implements ChildElementClassLoader<Token> {
+  public static class TypeLoader implements ChildElementClassLoader<TypeToken> {
 
-    private LinkedList<Token> stack = new LinkedList<>();
+    private LinkedList<TypeToken> stack = new LinkedList<>();
 
     public TypeLoader() {
 
@@ -1045,12 +1022,12 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
       if (end == offset) {
         throw RuleClassException.syntaxException("类型定义格式异常。位置：" + end + "，字符：" + characters.get(end));
       }
-      stack.push(new Token(characters.subList(offset, end), TokenKind.Type));
+      stack.push(new TypeToken(characters.subList(offset, end), TokenKind.Type));
       return end;
     }
 
     @Override
-    public Token pop() {
+    public TypeToken pop() {
       if (stack.isEmpty()) {
         return null;
       }

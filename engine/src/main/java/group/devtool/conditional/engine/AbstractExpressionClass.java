@@ -24,6 +24,9 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     this.tokens = tokens;
     this.max = tokens.size();
     this.instance = logicParse();
+    if (null != next()) {
+      throw RuleClassException.syntaxException(pos, tokens.get(pos).getValue());
+    }
   }
 
   @Override
@@ -44,6 +47,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     if (next() == TokenKind.OR) {
       pos += 1;
       Token token = tokens.get(pos);
+      pos += 1;
       return buildLogicExpressionInstance(left, logicParse(), Logic.get(token.getValue()));
     }
     return left;
@@ -68,7 +72,8 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     if (next() == TokenKind.AND) {
       pos += 1;
       Token token = tokens.get(pos);
-      return buildLogicExpressionInstance(left, logicParse(), Logic.get(token.getValue()));
+      pos += 1;
+      return buildLogicExpressionInstance(left, logicAndParse(), Logic.get(token.getValue()));
     }
     return left;
   }
@@ -77,6 +82,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     if (next() == TokenKind.NOT) {
       pos += 1;
       Token token = tokens.get(pos);
+      pos += 1;
       return buildLogicExpressionInstance(null, logicParse(), Logic.get(token.getValue()));
     }
     return compareParse();
@@ -92,7 +98,8 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
         || next() == TokenKind.NE) {
       pos += 1;
       Compare operation = Compare.get(tokens.get(pos).getValue());
-      return buildCompareExpressionInstance(left, operation, valueParse());
+      pos += 1;
+      return buildCompareExpressionInstance(left, operation, arithParse());
     }
     return left;
   }
@@ -117,6 +124,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
         || next() == TokenKind.POWER) {
       pos += 1;
       Token token = tokens.get(pos);
+      pos += 1;
       return buildArithExpression(left, Arith.get(token.getValue()), valueParse());
     }
     return left;
@@ -157,7 +165,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
         return getFunction();
 
       } else {
-        return buildVariableExpressionInstance(token.getValue());
+        return buildVariableExpressionInstance(token.getValue(), false);
       }
     }
     throw new RuntimeException();
@@ -184,38 +192,40 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
    * 
    * @param value 字符串
    * @return 数字字面量表达式
-   * @throws RuleClassException 
-   * @throws RuleInstanceException 
+   * @throws RuleClassException
+   * @throws RuleInstanceException
    */
   protected abstract ExpressionInstance buildNumberExpressionInstance(String value) throws RuleClassException;
 
   /**
    * 构造 变量引用 表达式
    * 
-   * @param value 变量
+   * @param value   变量
+   * @param hasNest 是否存在嵌套变量
    * @return 变量 表达式
    */
-  protected abstract VariableExpressionInstance buildVariableExpressionInstance(String value);
+  protected abstract VariableExpressionInstance buildVariableExpressionInstance(String value, boolean hasNest);
 
   private ExpressionInstance getFunction() throws RuleClassException {
     String funcName = tokens.get(pos).getValue();
-
+    pos += 2;
     List<ExpressionInstance> arguments = new ArrayList<>();
     // 跳过 （
     boolean loop = true;
     do {
-      Token token = tokens.get(pos);
-      Token next = tokens.get(pos + 1);
-
-      if (token.getKind() == TokenKind.RPAREN) {
-        loop = false;
-      } else if (next.getKind() != TokenKind.COMMA) {
-        loop = false;
-      } else {
-        ExpressionInstance expression = logicParse();
-        arguments.add(expression);
-        pos += 1;
+      if (tokens.get(pos).getKind() == TokenKind.RPAREN) {
+        break;
       }
+      ExpressionInstance expression = logicParse();
+      arguments.add(expression);
+      if (next() == TokenKind.COMMA) {
+        pos += 2;
+        continue;
+      }
+      if (next() != TokenKind.RPAREN) {
+        throw RuleClassException.syntaxException(pos + 1, "函数定义异常，函数名：" + funcName);
+      }
+      pos += 1;
     } while (pos < max && loop);
 
     if (pos >= max) {
@@ -238,15 +248,14 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     if (pos >= max) {
       return null;
     }
-
-    VariableExpressionInstance first = buildVariableExpressionInstance(tokens.get(pos).getValue());
-
-    pos += 1;
+    Token varToken = tokens.get(pos);
     VariableExpressionInstance child = getChildVariable();
     if (null != child) {
+      VariableExpressionInstance first = buildVariableExpressionInstance(varToken.getValue(), true);
       return buildNestVariableExpressionInstance(first, child);
+    } else {
+      return buildVariableExpressionInstance(varToken.getValue(), false);
     }
-    return first;
   }
 
   /**
@@ -263,17 +272,15 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     if (pos >= max) {
       return null;
     }
-    Token token = tokens.get(pos);
-    if (token.getKind() == TokenKind.DOT) {
-      pos += 1;
+    if (next() == TokenKind.DOT) {
+      pos += 2;
       return getPropertyVariable();
     }
-    if (token.getKind() == TokenKind.LBRACKET) {
-      pos += 1;
+    if (next() == TokenKind.LBRACKET) {
+      pos += 2;
       return getCollectionVariable();
     }
-
-    throw RuleClassException.syntaxException(pos, "变量取值语法错误");
+    return null;
   }
 
   private VariableExpressionInstance getPropertyVariable() throws RuleClassException {
@@ -283,7 +290,6 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     String name = tokens.get(pos).getValue();
     VariableExpressionInstance first = buildPropertyVariableExpressionInstance(name);
 
-    pos += 1;
     VariableExpressionInstance child = getChildVariable();
     if (null != child) {
       return buildNestVariableExpressionInstance(first, child);

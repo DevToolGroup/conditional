@@ -31,7 +31,7 @@ public class VariableClassLoaderTest {
     VariableClassLoader loader = new VariableClassLoader();
     ReteRuleClass ruleClass = new ReteRuleClass("id");
     try {
-      int end = loader.load(0, cs, ruleClass);
+      loader.load(0, cs, ruleClass);
       VariableClass v1 = ruleClass.getVariableClass("score");
       assertTrue(null != v1);
       assertEquals("Integer", v1.getType());

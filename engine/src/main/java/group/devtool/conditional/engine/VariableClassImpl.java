@@ -13,9 +13,15 @@ public class VariableClassImpl implements VariableClass {
 
   private ExpressionClass valueExpression;
 
-  public VariableClassImpl(String type, String code, String name, ExpressionClass valueExpression)
+  private String keyType;
+
+  private String valueType;
+
+  public VariableClassImpl(String type, String keyType, String valueType, String code, String name, ExpressionClass valueExpression)
       throws RuleClassException {
     this.type = type;
+    this.keyType = keyType;
+    this.valueType = valueType;
     this.code = code;
     this.name = name;
     this.valueExpression = valueExpression;
@@ -47,6 +53,16 @@ public class VariableClassImpl implements VariableClass {
   @Override
   public String getType() {
     return type;
+  }
+
+  @Override
+  public String getKeyType() {
+    return keyType;
+  }
+
+  @Override
+  public String getValueType() {
+    return valueType;
   }
 
   @Override

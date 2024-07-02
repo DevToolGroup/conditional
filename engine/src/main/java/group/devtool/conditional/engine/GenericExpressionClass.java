@@ -1,6 +1,5 @@
 package group.devtool.conditional.engine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import group.devtool.conditional.engine.Operation.Arith;
@@ -9,13 +8,10 @@ import group.devtool.conditional.engine.Operation.Logic;
 import group.devtool.conditional.engine.VariableReference.NestVariableReference;
 import group.devtool.conditional.engine.VariableReference.SimpleVariableReference;
 
-public class GenericExpressionClass extends AbstractExpressionClass {
-
-  private List<VariableReference> references;
+public abstract class GenericExpressionClass extends AbstractExpressionClass {
 
   public GenericExpressionClass(List<Token> tokens) throws RuleClassException {
     super(tokens);
-    references = new ArrayList<>();
   }
 
   @Override
@@ -52,15 +48,17 @@ public class GenericExpressionClass extends AbstractExpressionClass {
   }
 
   @Override
-  protected VariableExpressionInstance buildVariableExpressionInstance(String value) {
-    references.add(new SimpleVariableReference(value));
+  protected VariableExpressionInstance buildVariableExpressionInstance(String value, boolean hasNest) {
+    if (!hasNest) {
+      getVariableReference().add(new SimpleVariableReference(value));
+    }
     return new VariableExpressionInstanceImpl(value);
   }
 
   @Override
   protected VariableExpressionInstance buildNestVariableExpressionInstance(VariableExpressionInstance first,
       VariableExpressionInstance child) {
-    references.add(new NestVariableReference(first, child));
+    getVariableReference().add(new NestVariableReference(first, child));
     return new NestVariableExpressionInstanceImpl(first, child);
   }
 
@@ -75,13 +73,9 @@ public class GenericExpressionClass extends AbstractExpressionClass {
   }
 
   @Override
-  protected FunctionExpressionInstance buildFunctionExpressionInstance(String funcName, List<ExpressionInstance> arguments) {
+  protected FunctionExpressionInstance buildFunctionExpressionInstance(String funcName,
+      List<ExpressionInstance> arguments) {
     return new FunctionExpressionInstanceImpl(funcName, arguments);
-  }
-
-  @Override
-  public List<VariableReference> getVariableReference() {
-    return references;
   }
 
 }

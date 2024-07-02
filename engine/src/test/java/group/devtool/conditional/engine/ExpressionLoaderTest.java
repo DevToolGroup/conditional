@@ -1,5 +1,6 @@
 package group.devtool.conditional.engine;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -29,10 +30,10 @@ public class ExpressionLoaderTest {
   public void testExpressionLoader() {
     ExpressionLoader loader = new ExpressionLoader();
     try {
-      int end = loader.load(0, cs, null);
+      loader.load(0, cs, null);
       ExpressionToken token = loader.pop();
       List<Token> tokens = token.getTokens();
-      System.out.println(tokens);
+      assertEquals(45, tokens.size());
     } catch (RuleClassException e) {
       e.printStackTrace();
       fail(e.getMessage());

@@ -3,7 +3,7 @@ package group.devtool.conditional.engine;
 /**
  * 嵌套表达式实例默认实现
  */
-public class ChildExpressionInstanceImpl implements ExpressionInstance {
+public class ChildExpressionInstanceImpl implements ChildExpressionInstance {
 
   private ExpressionInstance child;
 
@@ -19,6 +19,11 @@ public class ChildExpressionInstanceImpl implements ExpressionInstance {
   @Override
   public String getExpressionString() {
     return "(" + child.getExpressionString() + ")";
+  }
+
+  @Override
+  public ExpressionInstance getChild() {
+    return child;
   }
 
 }

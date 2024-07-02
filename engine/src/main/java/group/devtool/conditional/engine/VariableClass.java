@@ -10,6 +10,10 @@ public interface VariableClass {
    */
   public String getType();
 
+  public String getKeyType();
+
+  public String getValueType();
+
   /**
    * @return 变量编码
    */

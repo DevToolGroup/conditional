@@ -7,7 +7,7 @@ import java.util.Map;
 
 public abstract class ReteNode {
 
-  private List<ReteNode> child;
+  private List<ReteNode> child = new ArrayList<>();
 
   protected abstract String getKey();
 
@@ -23,6 +23,8 @@ public abstract class ReteNode {
     List<TerminateNode> result = new ArrayList<>();
 
     Object value = doInvoke(context);
+    context.cacheExpressionValue(getKey(), value);
+
     for (ReteNode node : child) {
       if (node instanceof TerminateNode) {
         result.add((TerminateNode) node);
@@ -30,7 +32,7 @@ public abstract class ReteNode {
         result.addAll(node.invoke(context));
       }
     }
-    context.cacheExpressionValue(getKey(), value);
+
     return result;
   }
 
@@ -69,11 +71,25 @@ public abstract class ReteNode {
       return false;
     }
 
+    /**
+     * 方法仅在内部使用
+     * 
+     * @param node
+     * @return
+     */
     public ReteNode get(ReteNode node) {
       if (node instanceof RootNode) {
         return this;
       }
       return cache.get(node.getKey());
+    }
+
+    @Override
+    public void addChild(List<ReteNode> nodes) {
+      super.addChild(nodes);
+      for (ReteNode reteNode : nodes) {
+        cache.put(reteNode.getKey(), reteNode);
+      }
     }
 
     public void clear() {
@@ -111,8 +127,15 @@ public abstract class ReteNode {
 
     private ReteNode parent;
 
+    private String key;
+
+    public TerminateNode(String key) {
+      this.key = key;
+    }
+
     public TerminateNode(ConditionClass conditionClass) {
       this.conditionClass = conditionClass;
+      this.key = conditionClass.toString();
     }
 
     public ReteNode getParent() {
@@ -129,7 +152,7 @@ public abstract class ReteNode {
 
     @Override
     protected String getKey() {
-      return conditionClass.toString();
+      return key;
     }
 
     @Override
@@ -147,8 +170,15 @@ public abstract class ReteNode {
 
     private ComposeExpressionInstance expression;
 
+    private String key;
+
+    public AlphaNode(String key) {
+      this.key = key;
+    }
+
     public AlphaNode(ComposeExpressionInstance expression) {
       this.expression = expression;
+      this.key = expression.getExpressionString();
     }
 
     public ReteNode getLeft() {
@@ -173,13 +203,46 @@ public abstract class ReteNode {
 
     @Override
     protected String getKey() {
-      return expression.getExpressionString();
+      return key;
     }
 
     @Override
     protected Object doInvoke(RuleInstance context) throws RuleInstanceException {
-      return expression.getObject(context);
+      return expression.getCacheObject(context);
     }
+  }
+
+  public static class ChildNode extends ReteNode {
+
+    private ChildExpressionInstance instance;
+
+    private String key;
+
+    private ReteNode parent;
+
+    public ChildNode(ChildExpressionInstance instance) {
+      this.instance = instance;
+      this.key = instance.getExpressionString();
+    }
+
+    @Override
+    protected String getKey() {
+      return key;
+    }
+
+    @Override
+    protected Object doInvoke(RuleInstance context) throws RuleInstanceException {
+      return instance.getCacheObject(context);
+    }
+
+    public ReteNode getParent() {
+      return parent;
+    }
+
+    public void setParent(ReteNode parent) {
+      this.parent = parent;
+    }
+
   }
 
   public static class ValueNode extends ReteNode {
@@ -188,8 +251,15 @@ public abstract class ReteNode {
 
     private ReteNode parent;
 
+    private String key;
+
+    public ValueNode(String key) {
+      this.key = key;
+    }
+
     public ValueNode(ExpressionInstance expression) {
       this.expression = expression;
+      this.key = expression.getExpressionString();
     }
 
     public ExpressionInstance getExpression() {
@@ -198,7 +268,7 @@ public abstract class ReteNode {
 
     @Override
     protected String getKey() {
-      return expression.getExpressionString();
+      return key;
     }
 
     public void setParent(ReteNode parent) {
@@ -211,7 +281,7 @@ public abstract class ReteNode {
 
     @Override
     protected Object doInvoke(RuleInstance context) throws RuleInstanceException {
-      return expression.getObject(context);
+      return expression.getCacheObject(context);
     }
   }
 

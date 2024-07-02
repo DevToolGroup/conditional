@@ -37,7 +37,7 @@ public class VariableExpressionInstanceImpl implements VariableExpressionInstanc
 
   @Override
   public String getExpressionString() {
-    return "@" + name;
+    return name;
   }
 
   @Override

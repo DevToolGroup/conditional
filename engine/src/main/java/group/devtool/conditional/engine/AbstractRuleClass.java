@@ -157,7 +157,7 @@ public abstract class AbstractRuleClass implements RuleClass {
 
     List<ExpressionClass> conditionExpressions = conditions.stream().map(i -> i.getCondition())
         .collect(Collectors.toList());
-    
+
     for (ExpressionClass expressionClass : conditionExpressions) {
       checkReference(expressionClass.getVariableReference(), false);
     }
@@ -193,29 +193,30 @@ public abstract class AbstractRuleClass implements RuleClass {
 
   private void checkReference(VariableReference reference, boolean onlyReturn) throws RuleClassException {
     if (reference instanceof SimpleVariableReference) {
-      SimpleVariableReference simple = (SimpleVariableReference)reference;
+      SimpleVariableReference simple = (SimpleVariableReference) reference;
+      String varName = simple.getName();
       if (!onlyReturn) {
-        if (!argumentClasses.containsKey(simple.getName())) {
-          throw RuleClassException.syntaxException("输入参数中不存在表达式的引用变量。变量名：" + simple.getName());
+        if (!argumentClasses.containsKey(varName) && !variableClasses.containsKey(varName)) {
+          throw RuleClassException.syntaxException("输入参数/全局变量中不存在表达式的引用变量。变量名：" + varName);
         }
       } else {
-        if (!returnClass.getCode().equals(simple.getName())) {
-          throw RuleClassException.syntaxException("返回结果定义中不存在表达式的引用变量。变量名：" + simple.getName());
+        if (!returnClass.getCode().equals(varName)) {
+          throw RuleClassException.syntaxException("返回结果不存在表达式的引用变量。变量名：" + varName);
         }
       }
     }
     FactClass fact;
     if (reference instanceof NestVariableReference) {
-
-      NestVariableReference nest = (NestVariableReference)reference;
+      NestVariableReference nest = (NestVariableReference) reference;
+      String varName = nest.getName();
       if (!onlyReturn) {
-        if (!argumentClasses.containsKey(nest.getName())) {
-          throw RuleClassException.syntaxException("输入参数中不存在表达式的引用变量。变量名：" + nest.getName());
+        if (!argumentClasses.containsKey(varName) && !variableClasses.containsKey(varName)) {
+          throw RuleClassException.syntaxException("输入参数/全局变量中不存在表达式的引用变量。变量名：" + nest.getName());
         }
-        ArgumentClass argumentClass = argumentClasses.get(nest.getName());
+        ArgumentClass argumentClass = argumentClasses.get(varName);
         fact = factClasses.get(argumentClass.getType());
       } else {
-        if (!returnClass.getCode().equals(nest.getName())) {
+        if (!returnClass.getCode().equals(varName)) {
           throw RuleClassException.syntaxException("返回结果定义中不存在表达式的引用变量。变量名：" + nest.getName());
         }
         fact = factClasses.get(returnClass.getType());
@@ -234,26 +235,23 @@ public abstract class AbstractRuleClass implements RuleClass {
           isArray = false;
           isMap = false;
           continue;
-        } 
-        // FIX ME: List,Map的元素类型不能嵌套List，Map
+        }
         FactPropertyClass property = getPropertyType(child, fact, isArray, isMap);
         if (null == property) {
           throw RuleClassException.syntaxException("属性不存在");
         }
         if (factClasses.containsKey(property.getType())) {
           fact = factClasses.get(property.getType());
-
-        } if (property.getType().equals(DataType.List.name())) {
+        } else if (property.getType().equals(DataType.List.name())) {
           isArray = true;
           fact = factClasses.get(property.getValueType());
-
         } else if (property.getType().equals(DataType.Map.name())) {
           isMap = true;
           fact = factClasses.get(property.getValueType());
-
         } else {
           fact = null;
         }
+        
       }
 
     }
@@ -350,13 +348,13 @@ public abstract class AbstractRuleClass implements RuleClass {
                     + "，编码：" + propertyCode
                     + " ，事实编码：" + code);
           }
-        }
-        if (!base.contains(property.getKeyType())) {
-          throw RuleClassException.syntaxException(
-              "事实属性Map类型的Key类型只支持基本类型。"
-                  + "类型：" + propertyType
-                  + "，编码：" + propertyCode
-                  + " ，事实编码：" + code);
+          if (!base.contains(property.getKeyType())) {
+            throw RuleClassException.syntaxException(
+                "事实属性Map类型的Key类型只支持基本类型。"
+                    + "类型：" + propertyType
+                    + "，编码：" + propertyCode
+                    + " ，事实编码：" + code);
+          }
         }
       }
     }

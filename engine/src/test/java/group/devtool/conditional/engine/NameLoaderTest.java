@@ -51,7 +51,7 @@ public class NameLoaderTest {
   public void testErrorNameLoader() {
     NameLoader loader = new NameLoader();
     try {
-      int end = loader.load(0, error, null);
+      loader.load(0, error, null);
     } catch (RuleClassException e) {
       assertTrue(e instanceof RuleClassSyntaxException);
       assertTrue(3 == ((RuleClassSyntaxException)e).getPos());

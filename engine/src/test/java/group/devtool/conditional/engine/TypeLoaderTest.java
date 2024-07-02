@@ -69,7 +69,7 @@ public class TypeLoaderTest {
   public void testErrorCollectionTypeLoader() {
     TypeLoader loader = new TypeLoader();
     try {
-      int end = loader.load(0, error, null);
+      loader.load(0, error, null);
     } catch (RuleClassException e) {
       assertTrue(e instanceof RuleClassSyntaxException);
     }

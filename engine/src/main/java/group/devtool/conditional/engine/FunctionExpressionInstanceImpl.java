@@ -34,10 +34,23 @@ public class FunctionExpressionInstanceImpl implements FunctionExpressionInstanc
   @Override
   public String getExpressionString() {
     StringBuilder builder = new StringBuilder();
-    for (ExpressionInstance arg : arguments) {
-      builder.append(arg.getExpressionString()).append(",");
+    for (int i = 0; i < arguments.size(); i++) {
+      builder.append(arguments.get(i).getExpressionString());
+      if (i < arguments.size() - 1) {
+        builder.append(",");
+      }
     }
     return funcName + "(" + builder.toString() + ")";
+  }
+
+  @Override
+  public String getFunctionName() {
+    return funcName;
+  }
+
+  @Override
+  public List<ExpressionInstance> getArguments() {
+    return arguments;
   }
 
 }

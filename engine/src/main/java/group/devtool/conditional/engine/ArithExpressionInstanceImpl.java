@@ -138,7 +138,12 @@ public class ArithExpressionInstanceImpl implements ArithExpressionInstance {
 
   @Override
   public String getExpressionString() {
-    return left.getExpressionString() + arith.name() + right.getExpressionString();
+    return left.getExpressionString() + arith.op() + right.getExpressionString();
+  }
+
+  @Override
+  public Arith getArith() {
+    return arith;
   }
 
 }

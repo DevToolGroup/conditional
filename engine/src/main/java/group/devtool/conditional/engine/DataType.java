@@ -1,6 +1,7 @@
 package group.devtool.conditional.engine;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ public enum DataType {
   Decimal(BigDecimal.class),
   Boolean(Boolean.class),
   String(String.class),
+  Time(Date.class),
   List(List.class),
   Map(Map.class);
 
@@ -47,6 +49,7 @@ public enum DataType {
     result.add(Decimal.name());
     result.add(Boolean.name());
     result.add(String.name());
+    result.add(Time.name());
     return result;
   }
 

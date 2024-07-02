@@ -1,5 +1,6 @@
 package group.devtool.conditional.engine;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,12 +63,24 @@ public class ReteRuleInstance implements RuleInstance {
       this.functions.put(function.getName(), function);
     }
     Map<String, Object> context = new HashMap<>(params);
+    // 上下文入栈
     this.objects.push(context);
+    // 全局变量计算
+    context.putAll(global());
     // 结果参数构造
     this.result = new HashMap<>();
     context.put(ruleClass.getReturnClass().getCode(), result);
-
     this.initialized = true;
+  }
+
+  private Map<String, Object> global() throws RuleInstanceException {
+    Map<String, Object> globals = new HashMap<>();
+    Collection<VariableClass> variables = ruleClass.getVariableClasses();
+    for (VariableClass variableClass : variables) {
+      Object value = variableClass.getValueExpression().getInstance().getCacheObject(this);
+      globals.put(variableClass.getCode(), value);
+    }
+    return globals;
   }
 
   private void valid(Map<String, Object> params) throws RuleInstanceException {
@@ -137,20 +150,19 @@ public class ReteRuleInstance implements RuleInstance {
     }
   }
 
-
   private void valid(Object obj, String valueType) throws RuleInstanceException {
     FactClass fact = ruleClass.getFactClass(valueType);
     if (null != fact) {
       valid(obj, fact);
       return;
-    } 
+    }
     if (!DataType.getBaseTypes().contains(valueType)) {
       throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：" + valueType
-      + "，实际参数类型：" + obj.getClass().getSimpleName());
+          + "，实际参数类型：" + obj.getClass().getSimpleName());
     }
     if (!DataType.valueOf(valueType).getType().isAssignableFrom(obj.getClass())) {
       throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：" + valueType
-      + "，实际参数类型：" + obj.getClass().getSimpleName());
+          + "，实际参数类型：" + obj.getClass().getSimpleName());
     }
   }
 

@@ -27,6 +27,10 @@ public class Operation {
       }
       return null;
     }
+
+    public String op() {
+      return op;
+    }
   }
   
   public enum Compare {
@@ -53,6 +57,10 @@ public class Operation {
       }
       return null;
     }
+
+    public String op() {
+      return op;
+    }
   }
 
   public enum Logic {
@@ -75,6 +83,10 @@ public class Operation {
         }
       }
       return null;
+    }
+
+    public String op() {
+      return op;
     }
 
   }
