@@ -17,4 +17,16 @@ public interface ConditionClass {
    */
   public List<ExpressionClass> getFunctions();
 
+  /**
+   * @return 规则顺序
+   */
+  public Integer getOrder();
+
+  /**
+   * 设置规则顺序
+   * 
+   * @param order 规则顺序
+   */
+  public void setOrder(Integer order);
+
 }

@@ -8,9 +8,6 @@ import java.math.BigInteger;
  */
 public class NumberExpressionInstanceImpl implements NumberExpressionInstance {
 
-  private final static BigInteger MAX_SHORT_VALUE = BigInteger.valueOf(Short.MAX_VALUE);
-  private final static BigInteger MIN_SHORT_VALUE = BigInteger.valueOf(Short.MIN_VALUE);
-
   private final static BigInteger MAX_INT_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
   private final static BigInteger MIN_INT_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
 
@@ -39,19 +36,15 @@ public class NumberExpressionInstanceImpl implements NumberExpressionInstance {
     } else {
       BigInteger bigInteger = new BigInteger(value);
 
-      if (bigInteger.compareTo(MAX_SHORT_VALUE) <= 0
-          && bigInteger.compareTo(MIN_SHORT_VALUE) >= 0) {
-
-        this.value = Short.parseShort(value);
-
-      } else if (bigInteger.compareTo(MAX_INT_VALUE) <= 0
+      if (bigInteger.compareTo(MAX_INT_VALUE) <= 0
           && bigInteger.compareTo(MIN_INT_VALUE) >= 0) {
-
+        this.type = Integer.class;
         this.value = Integer.parseInt(value);
 
       } else if (bigInteger.compareTo(MAX_LONG_VALUE) <= 0
           && bigInteger.compareTo(MIN_LONG_VALUE) >= 0) {
 
+        this.type = Long.class;
         this.value = Long.parseLong(value);
 
       } else {

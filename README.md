@@ -1,6 +1,6 @@
 ## Conditional 规则引擎
 
-Conditional 规则引擎，参考 Rete 算法实现，相较于Drools引擎，禁用了事实修改，新增，删除的场景，增加了输入参数定义，输出参数定义，约束规则引擎的行为，降低规则复杂度，方便业务人员维护使用。
+Conditional 规则引擎，参考 Rete 算法实现，相较于优秀的Drools引擎，禁用了事实修改，新增，删除的场景，增加了输入参数定义，输出参数定义，约束规则引擎的行为，划分程序员与业务员的边界，降低规则复杂度，方便业务人员维护使用。
 
 ### 规则引擎解决的问题：
 
@@ -18,7 +18,7 @@ Conditional 规则引擎，参考 Rete 算法实现，相较于Drools引擎，�
 
 ### 以上问题的思考：
 
-1. 规则引擎一定是由程序员结合代码以及实际业务需求，抽象出来的受限制的业务规则，交给业务人员改动。
+1. 规则引擎一定是由程序员结合实际业务需求，抽象出来的受限制的业务规则，交给业务人员改动。
 
    实际场景举例：
 
@@ -34,6 +34,8 @@ Conditional 规则引擎，参考 Rete 算法实现，相较于Drools引擎，�
 
    - B 端优惠定价规则。
 
+   - 信用风险控制规则。
+
 2. 结合第一点，在有限的场景内，规则引擎相较于硬编码，能够比较简单的支持多维度，多条件，多变动的规则。同时，在以上几个例子也体现了规则引擎的另外一个优势，随着时间的推移，规则引擎能够比较简单的实现规则变动的记录，方便后续的追溯，如果硬编码的话，随着人员的流动，规则知识比较容易出现丢失。因此，在有限的范围内，维护规则的成本相对较小，也更方便追溯。
 
 3. 脚本引擎，流程引擎与规则引擎，在一定范围内存在解决问题的交集，但是针对 drools 一类的 rete 算法来说，规则引擎的主要特点：假设了存在部分规则相同，存在大量规则条件以及规则事实，有更好的性能表现，脚本引擎则需要对每个规则依次判断，而 rete 算法通过构造条件网络减少了规则判断。
@@ -43,69 +45,62 @@ Conditional 规则引擎，参考 Rete 算法实现，相较于Drools引擎，�
 ```
 # 类型定义
 TYPE History "积分历史"
-  Date    publishTime "时间"
+  Time    publishTime "时间"
   Integer count       "积分数量"
 END
 
-
+# 类型定义
 TYPE User "用户"
   Integer id              "用户ID"
-  Integer level           "等级"
-  String  name            "等级名称"
-  Integer score           "累计积分"
+  Integer score           "用户积分"
   List<History> histories "积分历史"
 END
 
+# 类型定义
 TYPE Order "订单"
-  Integer userId "用户ID"
+  User    user "用户"
   Integer amount "订单金额"
 END
 
+# 类型定义
 TYPE Score "积分"
-  Date    publishTime "时间";
   Integer score "积分数量"
+  List<History> histories "积分记录"
 END
 
-# 输入参数
-INPUT Order order, User user;
+# 输入参数定义
+ARG Order order, User user
 
-# 输出参数
-RETURN Score score;
+# 输出参数定义
+RETURN Score score
 
-# 全局变量
-CONST Integer sum "当日积分金额总和" = Sum(Retrieve(Get(GroupBy(user.histories, "publishTime"), Date(now())), "count"))
-CONST Boolean isMe "用户校验" = user.id == order.userId
-CONST Boolean limited "积分限制" = sum > 10000
+# 全局变量定义
+CONST List<History> dayHistory "当日积分记录" = FILTER(user.histories, "time", now())
+CONST Integer dayScore "当日积分数量" = SUM(RETRIEVE(dayHistory, "count"))
 
+# 规则定义
 # 如果消费金额小于100，不加积分
 IF
-  isMe && order.amount < 100
+  user.id == order.userId && order.amount < 100
 THEN
-  SET(score.score, 0)
+  PUT(score, "score", 1)
 END
 
-# 如果当日积分累计超过10000
-IF
-  isMe && limited
-THEN 
-  SET(score.score, 0)
-END
 
-# 如果消费金额大于100，小于500，并且当日积分累计不超过10000， 加100积分
+# 如果消费金额小于500，并且累计积分小于10000，增加100积分
 IF
-  isMe && order.amount > 100 && order.amount < 500 && !limited
+  user.id == order.userId && order.amount > 100 && order.amount < 500 && dayScore < 10000
 THEN
-  SET(score.score, 100)
+  PUT(score, "score", 100)
 END
 
-# 如果消费金额大于500，并且累计积分不超过10000，增加500积分，
+
+# 如果消费金额大于500，并且累计积分小于10000,增加500积分
 IF
-  isMe && order.amount > 500 && !limited
+  user.id == order.userId && order.amount > 500 && dayScore < 10000
 THEN
-  SET(score.score, 500)
+  PUT(score, "score", 500)
 END
-
-
 ```
 
 ### 语法说明

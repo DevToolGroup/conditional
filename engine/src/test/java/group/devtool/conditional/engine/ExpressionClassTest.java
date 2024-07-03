@@ -47,6 +47,10 @@ public class ExpressionClassTest {
 
   public String afnSuccess;
 
+  public List<Character> sfnCS = new ArrayList<>();
+
+  public String sfnSuccess;
+
   @Before
   public void read() {
     andSuccess = "user.id != 1 && user.id == order.userId && order.amount > 100 && order.amount < 500\n";
@@ -72,6 +76,11 @@ public class ExpressionClassTest {
     fnSuccess = "SET(user.score * 2, 2) > 200 / 1";
     for (int i = 0; i < fnSuccess.length(); i++) {
       fnCS.add(fnSuccess.charAt(i));
+    }
+
+    sfnSuccess = "SET(user.score * 2, \"2\", 2, \"3\") > 200 / 1";
+    for (int i = 0; i < sfnSuccess.length(); i++) {
+      sfnCS.add(sfnSuccess.charAt(i));
     }
 
     efnSuccess = "SET() > 200 / 1";
@@ -240,6 +249,38 @@ public class ExpressionClassTest {
     assertEquals("200/1", right.getExpressionString());
 
   }
+
+  @Test
+  public void testStringFuncExpressionClass() {
+    ExpressionLoader loader = new ExpressionLoader();
+    try {
+      loader.load(0, sfnCS, null);
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    ExpressionToken token = loader.pop();
+
+    VariableExpressionClass expression = null;
+    try {
+      expression = new VariableExpressionClass(token.getTokens());
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    ExpressionInstance instance = expression.getInstance();
+    assertTrue(instance instanceof CompareExpressionInstance);
+
+    CompareExpressionInstance compare = (CompareExpressionInstance) instance;
+    ExpressionInstance left = compare.left();
+    ExpressionInstance right = compare.right();
+
+    assertEquals("SET(user.score*2,\"2\",2,\"3\")", left.getExpressionString());
+    assertEquals(">", compare.getCompare().op());
+    assertEquals("200/1", right.getExpressionString());
+
+  }
+
 
   @Test
   public void testEmptyFuncExpressionClass() {

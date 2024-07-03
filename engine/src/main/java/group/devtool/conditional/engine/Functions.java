@@ -11,6 +11,21 @@ public enum Functions {
   ADD(new AddFunction()),
   LIST(new ListFunction()),
   Map(new MapFunction()),
+  MAX(new MaxFunction()),
+  SUBS(new SubFunction()),
+  ABS(new AbsFunction()),
+  AT(new CharAtFunction()),
+  IN(new ContainsFunction()),
+  LEN(new LengthFunction()),
+  LOWER(new LowerFunction()),
+  MIN(new MinFunction()),
+  ROUND(new RoundFunction()),
+  TRIMS(new TrimFunction()),
+  FILTER(new FilterFunction()),
+  SUM(new SumFunction()),
+  RETRIEVE(new RetrieveFunction()),
+  NOW(new NowFunction()),
+  UPPER(new UpperFunction()),
   ;
 
   private ConditionFunction<?> function;

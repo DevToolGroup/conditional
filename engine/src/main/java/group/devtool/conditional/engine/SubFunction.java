@@ -1,7 +1,5 @@
 package group.devtool.conditional.engine;
 
-import java.util.Map;
-
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
 public class SubFunction implements ConditionFunction<String> {

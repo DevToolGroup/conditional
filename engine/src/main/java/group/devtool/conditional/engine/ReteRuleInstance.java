@@ -59,28 +59,34 @@ public class ReteRuleInstance implements RuleInstance {
     valid(params);
 
     // 函数注册
-    for (ConditionFunction<?> function : functions) {
-      this.functions.put(function.getName(), function);
+    this.functions = loadBuiltInFunction();
+    if (null != functions && functions.length > 0) {
+      for (ConditionFunction<?> function : functions) {
+        this.functions.put(function.getName(), function);
+      }
     }
+
     Map<String, Object> context = new HashMap<>(params);
     // 上下文入栈
     this.objects.push(context);
     // 全局变量计算
-    context.putAll(global());
+    global(context);
     // 结果参数构造
     this.result = new HashMap<>();
     context.put(ruleClass.getReturnClass().getCode(), result);
     this.initialized = true;
   }
 
-  private Map<String, Object> global() throws RuleInstanceException {
-    Map<String, Object> globals = new HashMap<>();
+  private Map<String, ConditionFunction<?>> loadBuiltInFunction() {
+    return Functions.toMap();
+  }
+
+  private void global(Map<String, Object> context) throws RuleInstanceException {
     Collection<VariableClass> variables = ruleClass.getVariableClasses();
     for (VariableClass variableClass : variables) {
       Object value = variableClass.getValueExpression().getInstance().getCacheObject(this);
-      globals.put(variableClass.getCode(), value);
+      context.put(variableClass.getCode(), value);
     }
-    return globals;
   }
 
   private void valid(Map<String, Object> params) throws RuleInstanceException {
@@ -106,7 +112,7 @@ public class ReteRuleInstance implements RuleInstance {
 
     Map<String, FactPropertyClass> pm = factClass.getProperties()
         .stream()
-        .collect(Collectors.toMap(i -> i.getType(), Function.identity()));
+        .collect(Collectors.toMap(i -> i.getCode(), Function.identity()));
 
     Map<String, Object> map = (Map<String, Object>) value;
     for (Map.Entry<String, Object> entry : map.entrySet()) {

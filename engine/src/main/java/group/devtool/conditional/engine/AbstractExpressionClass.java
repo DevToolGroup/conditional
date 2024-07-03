@@ -151,7 +151,6 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
       return child;
     }
     if (token.getKind() == TokenKind.STRING) {
-      pos += 1;
       return buildStringExpressionInstance(token.getValue());
     }
     if (token.getKind() == TokenKind.NUMBER) {

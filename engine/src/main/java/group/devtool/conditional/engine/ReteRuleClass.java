@@ -1,6 +1,6 @@
 package group.devtool.conditional.engine;
 
-public class ReteRuleClass extends AbstractRuleClass {
+class ReteRuleClass extends AbstractRuleClass {
 
   private ConditionClassGroup conditionGroup;
 

@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * {@link RuleInstanceService} RETE规则实例服务
  */
-public class ReteRuleInstanceService implements RuleInstanceService {
+class ReteRuleInstanceService implements RuleInstanceService {
 
   private RuleClassService classService;
 
@@ -14,26 +14,16 @@ public class ReteRuleInstanceService implements RuleInstanceService {
   }
 
   @Override
-  public Map<String, Object> exec(String ruleClassId, Map<String, Object> params, ConditionFunction<?>... functions) throws RuleInstanceException {
+  public Map<String, Object> exec(String ruleClassId, Map<String, Object> params, ConditionFunction<?>... functions)
+      throws RuleInstanceException, RuleClassException {
     RuleClass ruleClass = classService.loadRuleClass(ruleClassId);
     RuleInstance ruleInstance = buildRuleInstance(ruleClass);
-
-    Map<String, ConditionFunction<?>> builtin = loadBuiltInFunction();
-    if (null != functions && functions.length > 0) {
-      for (ConditionFunction<?> function : functions) {
-        builtin.put(function.getName(), function);
-      }
-    }
     ruleInstance.initialized(params, functions);
     return ruleInstance.invoke();
   }
 
   private RuleInstance buildRuleInstance(RuleClass ruleClass) {
     return new ReteRuleInstance(ruleClass);
-  }
-
-  private Map<String, ConditionFunction<?>> loadBuiltInFunction() {
-    return Functions.toMap();
   }
 
 }

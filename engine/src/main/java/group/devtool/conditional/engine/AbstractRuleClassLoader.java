@@ -711,7 +711,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
         } else if (character == '"') {
           // 读取字符串
-          int index = readDynamicEOF(end, (i, c) -> {
+          int index = readDynamicEOF(end + 1, (i, c) -> {
             return c == '"';
           }, characters);
           index += 1;
@@ -731,9 +731,8 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
             if (endChar != 'd' && endChar != 'f' && endChar != 'b') {
               throw RuleClassException.syntaxException(index, endChar.toString());
             }
-            // index += 1;
+            index += 1;
           }
-          // index += 1;
           tokens.add(new Token(characters.subList(end, index), TokenKind.NUMBER));
           end = index;
 

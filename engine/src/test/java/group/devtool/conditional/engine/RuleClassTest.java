@@ -10,10 +10,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import group.devtool.conditional.engine.ReteNode.AlphaNode;
-import group.devtool.conditional.engine.ReteNode.RootNode;
-import group.devtool.conditional.engine.ReteNode.TerminateNode;
-import group.devtool.conditional.engine.ReteNode.ValueNode;
+import group.devtool.conditional.engine.Rete.RootNode;
+import group.devtool.conditional.engine.Rete.ReteNode;
+import group.devtool.conditional.engine.Rete.AlphaNode;
+import group.devtool.conditional.engine.Rete.TerminateNode;
 
 public class RuleClassTest {
 
@@ -132,47 +132,40 @@ public class RuleClassTest {
     assertTrue(conditionClassGroup instanceof ReteConditionClassGroup);
     ReteConditionClassGroup rcc = (ReteConditionClassGroup) conditionClassGroup;
 
-    RootNode root = (RootNode) rcc.getRoot();
-    assertEquals(7, root.getChild().size());
+    Rete rete = rcc.getRete();
+    assertEquals(5, rete.getRoot().getChild().size());
 
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("user.id")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("order.userId")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("order.amount")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("dayScore")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("100")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("500")));
-    assertTrue(root.getChild().stream().anyMatch(i -> i.getKey().equals("10000")));
+    ReteNode v1Child = rete.get(new AlphaNode(rete, "user.id==order.userId"));
+    assertNotNull(v1Child);
 
-    ReteNode v1 = root.getChild().stream().filter(i -> i.getKey().equals("user.id")).findFirst().get();
-    assertEquals("user.id==order.userId", v1.getChild().get(0).getKey());
-
-    List<ReteNode> v1Child = v1.getChild().get(0).getChild();
-    assertEquals(2, v1Child.size());
-    assertTrue(v1Child.stream()
+    assertEquals(2, v1Child.getChild().size());
+    assertTrue(v1Child.getChild().stream()
         .anyMatch(i -> i.getKey().equals("user.id==order.userId&&order.amount>500&&dayScore<10000")));
-    assertTrue(v1Child.stream()
+    assertTrue(v1Child.getChild().stream()
         .anyMatch(i -> i.getKey().equals("user.id==order.userId&&order.amount>100&&order.amount<500&&dayScore<10000")));
 
-    ReteNode v11 = v1Child.stream()
+    ReteNode v11 = v1Child.getChild().stream()
         .filter(i -> i.getKey().equals("user.id==order.userId&&order.amount>500&&dayScore<10000")).findFirst().get();
     assertTrue(v11.getChild().get(0) instanceof TerminateNode);
     TerminateNode t1 = (TerminateNode) v11.getChild().get(0);
     assertEquals("SET(score.score,500)", t1.getActions().get(0).getInstance().getExpressionString());
 
-    ReteNode v12 = v1Child.stream()
+    ReteNode v12 = v1Child.getChild().stream()
         .filter(i -> i.getKey().equals("user.id==order.userId&&order.amount>100&&order.amount<500&&dayScore<10000"))
         .findFirst().get();
     assertTrue(v12.getChild().get(0) instanceof TerminateNode);
     TerminateNode t2 = (TerminateNode) v12.getChild().get(0);
     assertEquals("SET(score.score,100)", t2.getActions().get(0).getInstance().getExpressionString());
 
-    ReteNode v2 = root.getChild().stream().filter(i -> i.getKey().equals("dayScore")).findFirst().get();
-    assertEquals(2, v2.getChild().get(0).getChild().size());
-    assertTrue(v2.getChild().get(0).getChild().stream()
+    ReteNode v2 = rete.getRoot().getChild().stream().filter(i -> i.getKey().equals("dayScore<10000")).findFirst().get();
+    assertEquals(2, v2.getChild().size());
+    assertTrue(v2.getChild().stream()
         .anyMatch(i -> i.getKey().equals("order.amount>500&&dayScore<10000")));
-    assertTrue(v2.getChild().get(0).getChild().stream()
+    assertTrue(v2.getChild().stream()
         .anyMatch(i -> i.getKey().equals("order.amount<500&&dayScore<10000")));
 
+    ReteNode v3 = v2.getChild().stream().filter(i -> i.getKey().equals("order.amount<500&&dayScore<10000")).findFirst().get();
+    assertEquals("order.amount>100&&order.amount<500&&dayScore<10000", v3.getChild().get(0).getKey());
   }
 
 }

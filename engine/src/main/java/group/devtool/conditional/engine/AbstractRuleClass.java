@@ -1,5 +1,6 @@
 package group.devtool.conditional.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import group.devtool.conditional.engine.VariableReference.SimpleVariableReferenc
 /**
  * {@link RuleClass} 基本实现
  */
-public abstract class AbstractRuleClass implements RuleClass {
+abstract class AbstractRuleClass implements RuleClass {
 
   private Map<String, FactClass> factClasses;
 
@@ -25,6 +26,8 @@ public abstract class AbstractRuleClass implements RuleClass {
 
   private Map<String, VariableClass> variableClasses;
 
+  private List<VariableClass> orderVariableClasses;
+
   private String id;
 
   public AbstractRuleClass(String id) {
@@ -32,6 +35,7 @@ public abstract class AbstractRuleClass implements RuleClass {
     this.factClasses = new HashMap<>();
     this.argumentClasses = new HashMap<>();
     this.variableClasses = new HashMap<>();
+    this.orderVariableClasses = new ArrayList<>();
   }
 
   @Override
@@ -85,11 +89,12 @@ public abstract class AbstractRuleClass implements RuleClass {
   }
 
   @Override
-  public Collection<VariableClass> getVariableClasses() {
-    return variableClasses.values();
+  public List<VariableClass> getVariableClasses() {
+    return orderVariableClasses;
   }
 
   public void addVariableClass(VariableClass variableClass) {
+    orderVariableClasses.add(variableClass);
     this.variableClasses.put(variableClass.getCode(), variableClass);
   }
 
@@ -251,7 +256,7 @@ public abstract class AbstractRuleClass implements RuleClass {
         } else {
           fact = null;
         }
-        
+
       }
 
     }

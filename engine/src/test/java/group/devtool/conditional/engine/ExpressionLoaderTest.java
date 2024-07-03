@@ -20,7 +20,7 @@ public class ExpressionLoaderTest {
 
   @Before
   public void read() {
-    success = "user.id != 1 && user.id == order.userId || (order.amount > 100 && order.amount < 500) && (currentDayScore < 10000 || 3 * 5.1b < 20) && true && !var \n";
+    success = "user.id != \"1\" && user.id != 1 && user.id == order.userId || (order.amount > 100 && order.amount < 500) && (currentDayScore < 10000 || 3 * 5.1b < 20) && true && !var \n";
     for (int i = 0; i < success.length(); i++) {
       cs.add(success.charAt(i));
     }
@@ -33,7 +33,9 @@ public class ExpressionLoaderTest {
       loader.load(0, cs, null);
       ExpressionToken token = loader.pop();
       List<Token> tokens = token.getTokens();
-      assertEquals(45, tokens.size());
+      assertEquals(50, tokens.size());
+      assertEquals(TokenKind.STRING, tokens.get(4).getKind());
+      assertEquals("\"1\"", tokens.get(4).getValue());
     } catch (RuleClassException e) {
       e.printStackTrace();
       fail(e.getMessage());

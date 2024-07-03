@@ -15,9 +15,11 @@ public interface RuleInstanceService {
    * @param functions   自定义函数
    * @return 执行结果
    * @throws RuleInstanceException 规则实例运行异常
+   * @throws RuleClassException    规则定义异常
    */
   public Map<String, Object> exec(String ruleClassId,
       Map<String, Object> params,
-      ConditionFunction<?>... functions) throws RuleInstanceException;
+      ConditionFunction<?>... functions)
+      throws RuleInstanceException, RuleClassException;
 
 }

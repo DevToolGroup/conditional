@@ -4,29 +4,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import group.devtool.conditional.engine.ReteNode.AlphaNode;
-import group.devtool.conditional.engine.ReteNode.ChildNode;
-import group.devtool.conditional.engine.ReteNode.RootNode;
-import group.devtool.conditional.engine.ReteNode.TerminateNode;
-import group.devtool.conditional.engine.ReteNode.ValueNode;
+import group.devtool.conditional.engine.Rete.ReteNode;
+import group.devtool.conditional.engine.Rete.BetaNode;
+import group.devtool.conditional.engine.Rete.RootNode;
+import group.devtool.conditional.engine.Rete.TerminateNode;
+import group.devtool.conditional.engine.Rete.AlphaNode;
 
 /**
  * 基于Rete算法的规则处理
  */
 public class ReteConditionClassGroup implements ConditionClassGroup {
 
-  private RootNode root;
+  private Rete rete;
 
   private List<ConditionClass> conditions;
 
+  private Integer order = 0;
+
   public ReteConditionClassGroup() {
-    root = new RootNode();
+    rete = new Rete();
     conditions = new ArrayList<>();
   }
 
   @Override
   public void addCondition(ConditionClass conditionClass) {
+    conditionClass.setOrder(order);
     conditions.add(conditionClass);
+    order += 1;
     ReteNode terminate = buildReteExpression(conditionClass);
     merge(terminate);
   }
@@ -38,44 +42,34 @@ public class ReteConditionClassGroup implements ConditionClassGroup {
     do {
       List<ReteNode> next = new ArrayList<>();
       for (ReteNode node : nodes) {
-        if (root.contains(node)) {
+        if (rete.contains(node)) {
           // 可能子节点不存在
-          if (node instanceof AlphaNode) {
-            AlphaNode an = (AlphaNode) node;
+          if (node instanceof BetaNode) {
+            BetaNode an = (BetaNode) node;
             next.add(an.getLeft());
             next.add(an.getRight());
-          } else if (node instanceof ChildNode) {
-            ChildNode an = (ChildNode) node;
-            next.add(an.getParent());
           }
-        } else if (node instanceof AlphaNode) {
-          AlphaNode an = (AlphaNode) node;
-          if (root.contains(an.getLeft())) {
-            root.get(an.getLeft()).addChild(Collections.singletonList(an));
+        } else if (node instanceof BetaNode) {
+          BetaNode an = (BetaNode) node;
+          if (rete.contains(an.getLeft())) {
+            rete.get(an.getLeft()).addChild(Collections.singletonList(an));
           } else {
             next.add(an.getLeft());
           }
-          if (root.contains(an.getRight())) {
-            root.get(an.getRight()).addChild(Collections.singletonList(an));
+          if (rete.contains(an.getRight())) {
+            rete.get(an.getRight()).addChild(Collections.singletonList(an));
           } else {
             next.add(an.getRight());
-          }
-        } else if (node instanceof ChildNode) {
-          ChildNode cn = (ChildNode) node;
-          if (root.contains(cn.getParent())) {
-            root.get(cn.getParent()).addChild(Collections.singletonList(cn));
-          } else {
-            next.add(cn.getParent());
           }
         } else if (node instanceof TerminateNode) {
           TerminateNode tn = (TerminateNode) node;
-          if (root.contains(tn.getParent())) {
-            root.get(tn.getParent()).addChild(Collections.singletonList(tn));
+          if (rete.contains(tn.getParent())) {
+            rete.get(tn.getParent()).addChild(Collections.singletonList(tn));
           } else {
             next.add(tn.getParent());
           }
-        } else if (node instanceof ValueNode) {
-          root.addChild(Collections.singletonList(node));
+        } else if (node instanceof AlphaNode) {
+          rete.getRoot().addChild(Collections.singletonList(node));
         } else {
           // do nothing
         }
@@ -86,37 +80,36 @@ public class ReteConditionClassGroup implements ConditionClassGroup {
   }
 
   private ReteNode buildReteExpression(ConditionClass conditionClass) {
-    RootNode root = new RootNode();
-    TerminateNode terminate = new TerminateNode(conditionClass);
-    ReteNode expr = build(root, conditionClass.getCondition().getInstance(), terminate);
+    Rete nr = new Rete();
+    RootNode root = new RootNode(nr);
+    TerminateNode terminate = new TerminateNode(nr, conditionClass);
+    ReteNode expr = build(nr, root, conditionClass.getCondition().getInstance(), terminate);
     terminate.setParent(expr);
     return terminate;
   }
 
-  private ReteNode build(RootNode root, ExpressionInstance expression, ReteNode child) {
-    if (expression instanceof ComposeExpressionInstance) {
-      ComposeExpressionInstance logic = (ComposeExpressionInstance) expression;
-      AlphaNode alpha = new AlphaNode(logic);
-      alpha.addChild(Collections.singletonList(child));
-      if (null != logic.left()) {
-        alpha.setLeft(build(root, logic.left(), alpha));
-      }
-      if (null != logic.right()) {
-        alpha.setRight(build(root, logic.right(), alpha));
-      }
-      return alpha;
-    }
+  private ReteNode build(Rete rete, RootNode root, ExpressionInstance expression, ReteNode child) {
     if (expression instanceof ChildExpressionInstance) {
       ChildExpressionInstance childInstance = (ChildExpressionInstance) expression;
-      ChildNode reteChildNode = new ChildNode(childInstance);
-      reteChildNode.addChild(Collections.singletonList(child));
-      reteChildNode.setParent(build(root, childInstance.getChild(), reteChildNode));
-      return reteChildNode;
+      return build(rete, root, childInstance.getChild(), child);
     }
-    ValueNode value = new ValueNode(expression);
-    if (root.contains(value)) {
-      root.get(value).addChild(Collections.singletonList(child));
-      ;
+
+    if (expression instanceof LogicExpressionInstance) {
+      LogicExpressionInstance logic = (LogicExpressionInstance) expression;
+      BetaNode beta = new BetaNode(rete, logic);
+      beta.addChild(Collections.singletonList(child));
+      if (null != logic.left()) {
+        beta.setLeft(build(rete, root, logic.left(), beta));
+      }
+      if (null != logic.right()) {
+        beta.setRight(build(rete, root, logic.right(), beta));
+      }
+      return beta;
+    }
+
+    AlphaNode value = new AlphaNode(rete, expression);
+    if (rete.contains(value)) {
+      rete.get(value).addChild(Collections.singletonList(child));
     } else {
       value.addChild(Collections.singletonList(child));
       value.setParent(root);
@@ -128,27 +121,12 @@ public class ReteConditionClassGroup implements ConditionClassGroup {
 
   @Override
   public void invoke(RuleInstance instance) throws RuleInstanceException {
-    List<TerminateNode> matched = new ArrayList<>();
-
-    // 执行规则条件
-    List<ValueNode> child = root.getValues();
-    for (ValueNode node : child) {
-      matched.addAll(node.invoke(instance));
-    }
-
-    // 执行规则动作
-    for (TerminateNode terminate : matched) {
-      List<ExpressionClass> actions = terminate.getActions();
-      for (ExpressionClass actionClass : actions) {
-        actionClass.getInstance().getObject(instance);
-      }
-    }
-
+    rete.run(instance);
   }
 
   @Override
   public void completed() {
-    root.clear();
+    rete.clear();
   }
 
   @Override
@@ -156,8 +134,8 @@ public class ReteConditionClassGroup implements ConditionClassGroup {
     return conditions;
   }
 
-  public ReteNode getRoot() {
-    return root;
+  public Rete getRete() {
+    return rete;
   }
 
 }
