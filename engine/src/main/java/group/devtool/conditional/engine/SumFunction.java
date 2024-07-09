@@ -34,11 +34,9 @@ public class SumFunction implements ConditionFunction<Number> {
       throw RuleInstanceException.functionException("SUM函数需要一个列表类型参数");
     }
 
-    Class<? extends Number> elementType = null;
-
-    Integer intResult = 0;
-    Double doubleResult = 0.0;
-    Float floatResult = 0.0f;
+    int intResult = 0;
+    double doubleResult = 0.0;
+    float floatResult = 0.0f;
     BigDecimal decimalResult = BigDecimal.ZERO;
 
     List<?> listTarget = (List<?>) target;
@@ -46,10 +44,7 @@ public class SumFunction implements ConditionFunction<Number> {
       if (!(object instanceof Number)) {
         throw RuleInstanceException.functionException("SUM函数列表元素类型非数值类型");
       }
-      if (null != elementType && !object.getClass().equals(elementType)) {
-        throw RuleInstanceException.functionException("SUM函数列表元素类型不一致");
-      }
-      Number number = (Number) object;
+			Number number = (Number) object;
 
       if (object instanceof Integer) {
         intResult += number.intValue();

@@ -12,9 +12,7 @@ package group.devtool.conditional.engine;
 
 public enum TokenKind {
 
-  KEYWORD,
   Type,
-  ComponentType,
   Code,
   Name, 
 

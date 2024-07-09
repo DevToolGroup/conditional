@@ -16,7 +16,15 @@ public class RuleClassException extends Exception {
     super(message);
   }
 
-  public static class RuleClassStreamException extends RuleClassException {
+  public static class RuleClassFileNotFoundException extends RuleClassException {
+
+    public RuleClassFileNotFoundException(String message) {
+      super(message);
+    }
+
+  }
+
+	public static class RuleClassStreamException extends RuleClassException {
 
     public RuleClassStreamException(String message) {
       super(message);
@@ -54,4 +62,7 @@ public class RuleClassException extends Exception {
     return new RuleClassSyntaxException(pos, pattern);
   }
 
+  public static RuleClassException ruleClassFileNotFound(String ruleClassFile) {
+    return new RuleClassFileNotFoundException("规则文件不存在。文件名：" + ruleClassFile);
+  }
 }

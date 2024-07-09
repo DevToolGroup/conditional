@@ -24,7 +24,7 @@ public class MaxFunction implements ConditionFunction<Number> {
   @Override
   public Number apply(Object... args) throws RuleInstanceFunctionException {
     if (null == args || args.length != 2) {
-      throw RuleInstanceException.functionException("MAX函数只需要一个数字参数");
+      throw RuleInstanceException.functionException("MAX函数需要两个数字参数");
     }
     Object val = args[0];
     Object other = args[0];

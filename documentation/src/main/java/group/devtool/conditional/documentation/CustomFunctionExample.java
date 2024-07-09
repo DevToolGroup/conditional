@@ -8,32 +8,22 @@
  * License: GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
  * See the license.txt file in the root directory or see <http://www.gnu.org/licenses/>.
  */
-package group.devtool.conditional.engine;
+package group.devtool.conditional.documentation;
 
-import java.util.ArrayList;
-import java.util.List;
+import group.devtool.conditional.engine.ConditionFunction;
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
-/**
- * List初始化
- */
-public class ListFunction implements ConditionFunction<List<Object>> {
+public class CustomFunctionExample implements ConditionFunction<Void> {
 
   @Override
   public String getName() {
-    return "LIST";
+    return "CUS";
   }
 
   @Override
-  public List<Object> apply(Object... args) throws RuleInstanceFunctionException {
-    if (null == args || args.length < 1) {
-      throw RuleInstanceException.functionException("LIST函数至少提供一个参数");
-    }
-    List<Object> result = new ArrayList<>();
-    for (int i = 0; i < args.length; i += 1) {
-      result.add(args[i]);
-    }
-    return result;
+  public Void apply(Object... args) throws RuleInstanceFunctionException {
+    System.out.println("custom function");
+    return null;
   }
 
 }

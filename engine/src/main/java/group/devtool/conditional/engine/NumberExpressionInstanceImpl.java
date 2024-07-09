@@ -1,8 +1,8 @@
 /*
- * The Conditional rule engine, similar to Drools, 
- * introduces the definition of input and output parameters, 
- * thereby demarcating the boundaries between programmers and business personnel. 
- * 
+ * The Conditional rule engine, similar to Drools,
+ * introduces the definition of input and output parameters,
+ * thereby demarcating the boundaries between programmers and business personnel.
+ *
  * It reduces the complexity of rules, making it easier for business staff to maintain and use them.
  *
  * License: GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
@@ -18,64 +18,68 @@ import java.math.BigInteger;
  */
 public class NumberExpressionInstanceImpl implements NumberExpressionInstance {
 
-  private final static BigInteger MAX_INT_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
-  private final static BigInteger MIN_INT_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
+	private final static BigInteger MAX_INT_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
+	private final static BigInteger MIN_INT_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
 
-  private final static BigInteger MAX_LONG_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
-  private final static BigInteger MIN_LONG_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
+	private final static BigInteger MAX_LONG_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
+	private final static BigInteger MIN_LONG_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
 
-  private Class<? extends Number> type;
+	private Class<? extends Number> type;
 
-  private String originValue;
+	private String originValue;
 
-  private Object value;
+	private Object value;
 
-  public NumberExpressionInstanceImpl(String value) throws RuleClassException {
-    this.originValue = value;
+	public NumberExpressionInstanceImpl(String value, boolean positive) throws RuleClassException {
+		this.originValue = value;
+		if (value.endsWith("f")) {
+			type = Float.class;
+			Float fv = Float.parseFloat(value.substring(0, value.length() - 1));
+			this.value = positive ? fv : -fv;
+		} else if (value.endsWith("d")) {
+			type = Double.class;
+			double dv = Double.parseDouble(value.substring(0, value.length() - 1));
+			this.value = positive ? dv : -dv;
 
-    if (value.endsWith("f")) {
-      type = Float.class;
-      this.value = Float.parseFloat(value.substring(0, value.length() - 1));
-    } else if (value.endsWith("d")) {
-      type = Double.class;
-      this.value = Double.parseDouble(value.substring(0, value.length() - 1));
+		} else if (value.endsWith("b")) {
+			type = BigDecimal.class;
+			BigDecimal bv = new BigDecimal(value.substring(0, value.length() - 1));
+			this.value = positive ? bv : bv.negate();
+		} else {
+			BigInteger bigInteger = new BigInteger(value);
 
-    } else if (value.endsWith("b")) {
-      type = BigDecimal.class;
-      this.value = new BigDecimal(value.substring(0, value.length() - 1));
-    } else {
-      BigInteger bigInteger = new BigInteger(value);
+			if (bigInteger.compareTo(MAX_INT_VALUE) <= 0
+							&& bigInteger.compareTo(MIN_INT_VALUE) >= 0) {
+				this.type = Integer.class;
+				int iv = Integer.parseInt(value);
+				this.value = positive ? iv : -iv;
 
-      if (bigInteger.compareTo(MAX_INT_VALUE) <= 0
-          && bigInteger.compareTo(MIN_INT_VALUE) >= 0) {
-        this.type = Integer.class;
-        this.value = Integer.parseInt(value);
+			} else if (bigInteger.compareTo(MAX_LONG_VALUE) <= 0
+							&& bigInteger.compareTo(MIN_LONG_VALUE) >= 0) {
 
-      } else if (bigInteger.compareTo(MAX_LONG_VALUE) <= 0
-          && bigInteger.compareTo(MIN_LONG_VALUE) >= 0) {
+				this.type = Long.class;
+				long lv = Long.parseLong(value);
+				this.value = positive ? lv : -lv;
 
-        this.type = Long.class;
-        this.value = Long.parseLong(value);
+			} else {
+				throw RuleClassException.syntaxException("数字超过已知范围");
+			}
+		}
+	}
 
-      } else {
-        throw RuleClassException.syntaxException("数字超过已知范围");
-      }
-    }
-  }
+	@Override
+	public Object getObject(RuleInstance context) throws RuleInstanceException {
+		return type.cast(value);
+	}
 
-  @Override
-  public Object getObject(RuleInstance context) throws RuleInstanceException {
-    return type.cast(value);
-  }
+	@Override
+	public Class<? extends Number> getType() {
+		return type;
+	}
 
-  @Override
-  public Class<? extends Number> getType() {
-    return type;
-  }
-
-  @Override
-  public String getExpressionString() {
-    return originValue;
-  }
+	@Override
+	public String getExpressionString() {
+		return originValue;
+	}
 
 }

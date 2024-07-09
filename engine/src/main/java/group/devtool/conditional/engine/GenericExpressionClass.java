@@ -53,8 +53,8 @@ public abstract class GenericExpressionClass extends AbstractExpressionClass {
   }
 
   @Override
-  protected ExpressionInstance buildNumberExpressionInstance(String value) throws RuleClassException {
-    return new NumberExpressionInstanceImpl(value);
+  protected ExpressionInstance buildNumberExpressionInstance(String value, boolean positive) throws RuleClassException {
+    return new NumberExpressionInstanceImpl(value, positive);
   }
 
   @Override

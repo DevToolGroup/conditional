@@ -1,8 +1,8 @@
 /*
- * The Conditional rule engine, similar to Drools, 
- * introduces the definition of input and output parameters, 
- * thereby demarcating the boundaries between programmers and business personnel. 
- * 
+ * The Conditional rule engine, similar to Drools,
+ * introduces the definition of input and output parameters,
+ * thereby demarcating the boundaries between programmers and business personnel.
+ *
  * It reduces the complexity of rules, making it easier for business staff to maintain and use them.
  *
  * License: GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
@@ -11,31 +11,33 @@
 package group.devtool.conditional.engine;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
 public class RoundFunction implements ConditionFunction<Long> {
 
-  @Override
-  public String getName() {
-    return "ROUND";
-  }
+	@Override
+	public String getName() {
+		return "ROUND";
+	}
 
-  @Override
-  public Long apply(Object... args) throws RuleInstanceFunctionException {
-    if (null == args || args.length != 1) {
-      throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
-    }
-    Object target = args[0];
-    if (target instanceof Double) {
-      return Math.round((Double) target);
-    } else if (target instanceof Float) {
-      return Long.valueOf(Math.round((Float) target));
-    } else if (target instanceof BigDecimal) {
-      return Long.valueOf(Math.round(((BigDecimal) target).doubleValue()));
-    } else {
-      throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
-    }
-  }
+	@Override
+	public Long apply(Object... args) throws RuleInstanceFunctionException {
+		if (null == args || args.length != 1) {
+			throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
+		}
+		Object target = args[0];
+		if (target instanceof Double) {
+			return new BigDecimal(((Double) target).toString()).round(new MathContext(4, RoundingMode.HALF_UP)).longValue();
+		} else if (target instanceof Float) {
+			return new BigDecimal(((Float) target).toString()).round(new MathContext(4, RoundingMode.HALF_UP)).longValue();
+		} else if (target instanceof BigDecimal) {
+			return ((BigDecimal) target).round(new MathContext(4, RoundingMode.HALF_UP)).longValue();
+		} else {
+			throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
+		}
+	}
 
 }

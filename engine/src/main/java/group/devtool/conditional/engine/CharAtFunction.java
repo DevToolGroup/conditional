@@ -21,7 +21,7 @@ public class CharAtFunction implements ConditionFunction<Character> {
 
   @Override
   public Character apply(Object... args) throws RuleInstanceFunctionException {
-    if (null == args || args.length != 1) {
+    if (null == args || args.length != 2) {
       throw RuleInstanceException.functionException("AT函数需要一个字符串参数，一个位置参数");
     }
     Object target = args[0];

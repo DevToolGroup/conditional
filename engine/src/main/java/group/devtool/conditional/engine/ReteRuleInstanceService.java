@@ -33,7 +33,7 @@ class ReteRuleInstanceService implements RuleInstanceService {
   }
 
   private RuleInstance buildRuleInstance(RuleClass ruleClass) {
-    return new ReteRuleInstance(ruleClass);
+    return new RuleInstanceImpl(ruleClass);
   }
 
 }

@@ -122,7 +122,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
    * @return 判断 表达式
    */
   protected abstract ExpressionInstance buildCompareExpressionInstance(ExpressionInstance left, Compare operation,
-      ExpressionInstance valueParse);
+      ExpressionInstance right);
 
   private ExpressionInstance arithParse() throws RuleClassException {
     ExpressionInstance left = valueParse();
@@ -150,7 +150,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
    */
   protected abstract ExpressionInstance buildArithExpression(ExpressionInstance left,
       Arith arith,
-      ExpressionInstance valueParse);
+      ExpressionInstance right);
 
   private ExpressionInstance valueParse() throws RuleClassException {
     Token token = tokens.get(pos);
@@ -164,7 +164,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
       return buildStringExpressionInstance(token.getValue());
     }
     if (token.getKind() == TokenKind.NUMBER) {
-      return buildNumberExpressionInstance(token.getValue());
+      return buildNumberExpressionInstance(token.getValue(), true);
     }
     if (token.getKind() == TokenKind.VAR) {
       if (next() == TokenKind.DOT || next() == TokenKind.LBRACKET) {
@@ -176,6 +176,12 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
       } else {
         return buildVariableExpressionInstance(token.getValue(), false);
       }
+    }
+    // FIXME: 待验证
+    if (token.getKind() == TokenKind.MINUS && tokens.get(pos + 1).getKind() == TokenKind.NUMBER) {
+      Token value = tokens.get(pos + 1);
+      pos += 1;
+      return buildNumberExpressionInstance(value.getValue(), false);
     }
     throw new RuntimeException();
   }
@@ -198,13 +204,15 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
 
   /**
    * 构造 数字字面量 表达式
-   * 
+   *
    * @param value 字符串
+   * @param positive 是否是正数
+   *
    * @return 数字字面量表达式
    * @throws RuleClassException
    * @throws RuleInstanceException
    */
-  protected abstract ExpressionInstance buildNumberExpressionInstance(String value) throws RuleClassException;
+  protected abstract ExpressionInstance buildNumberExpressionInstance(String value, boolean positive) throws RuleClassException;
 
   /**
    * 构造 变量引用 表达式

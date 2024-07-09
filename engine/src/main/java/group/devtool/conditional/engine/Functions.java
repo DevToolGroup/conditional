@@ -20,7 +20,7 @@ public enum Functions {
   PUT(new PutFunction()),
   ADD(new AddFunction()),
   LIST(new ListFunction()),
-  Map(new MapFunction()),
+  MAP(new MapFunction()),
   MAX(new MaxFunction()),
   SUBS(new SubFunction()),
   ABS(new AbsFunction()),

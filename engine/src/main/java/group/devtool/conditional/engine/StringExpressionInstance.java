@@ -10,6 +10,9 @@
  */
 package group.devtool.conditional.engine;
 
+/**
+ * 字符串表达式示例
+ */
 public interface StringExpressionInstance extends ExpressionInstance {
 
 }

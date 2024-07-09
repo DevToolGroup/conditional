@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * {@link RuleInstance} Rete算法实现实例
  */
-public class ReteRuleInstance implements RuleInstance {
+public class RuleInstanceImpl implements RuleInstance {
 
   private boolean initialized = false;
 
@@ -36,7 +36,7 @@ public class ReteRuleInstance implements RuleInstance {
 
   private Map<String, Object> result;
 
-  public ReteRuleInstance(RuleClass ruleClass) {
+  public RuleInstanceImpl(RuleClass ruleClass) {
     this.ruleClass = ruleClass;
   }
 
@@ -138,32 +138,28 @@ public class ReteRuleInstance implements RuleInstance {
   @SuppressWarnings("unchecked")
   private void valid(Object value, FactPropertyClass property) throws RuleInstanceException {
     DataType dt = DataType.valueOf(property.getType());
-    if (null == dt) {
-      FactClass fact = ruleClass.getFactClass(property.getType());
-      valid(value, fact);
-
-    } else if (dt == DataType.List) {
-      if (!(value instanceof List)) {
-        throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：List，实际参数类型：" + value.getClass().getSimpleName());
-      }
-      List<Object> lo = (List<Object>) value;
-      for (Object obj : lo) {
-        valid(obj, property.getValueType());
-      }
-    } else if (dt == DataType.Map) {
-      if (!(value instanceof Map)) {
-        throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：Map，实际参数类型：" + value.getClass().getSimpleName());
-      }
-      Map<String, Object> lo = (Map<String, Object>) value;
-      for (Object obj : lo.values()) {
-        valid(obj, property.getValueType());
-      }
-    } else {
-      if (!dt.getType().isAssignableFrom(value.getClass())) {
-        throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：" + property.getType()
-            + "，实际参数类型：" + value.getClass().getSimpleName());
-      }
-    }
+		if (dt == DataType.List) {
+			if (!(value instanceof List)) {
+				throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：List，实际参数类型：" + value.getClass().getSimpleName());
+			}
+			List<Object> lo = (List<Object>) value;
+			for (Object obj : lo) {
+				valid(obj, property.getValueType());
+			}
+		} else if (dt == DataType.Map) {
+			if (!(value instanceof Map)) {
+				throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：Map，实际参数类型：" + value.getClass().getSimpleName());
+			}
+			Map<String, Object> lo = (Map<String, Object>) value;
+			for (Object obj : lo.values()) {
+				valid(obj, property.getValueType());
+			}
+		} else {
+			if (!dt.getType().isAssignableFrom(value.getClass())) {
+				throw RuleInstanceException.parameterException("参数类型异常。预期参数类型：" + property.getType()
+						+ "，实际参数类型：" + value.getClass().getSimpleName());
+			}
+		}
   }
 
   private void valid(Object obj, String valueType) throws RuleInstanceException {

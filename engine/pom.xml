@@ -6,14 +6,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>group.devtool.conditional</groupId>
-    <artifactId>conditional</artifactId>
+    <groupId>group.devtool.conditional.parent</groupId>
+    <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
   <groupId>group.devtool.conditional.engine</groupId>
   <artifactId>engine</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>engine</name>
+  <name>conditional-engine</name>
+  <packaging>jar</packaging>
 
 </project>

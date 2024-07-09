@@ -16,15 +16,6 @@ package group.devtool.conditional.engine;
 public interface RuleClassService {
 
   /**
-   * 新增规则定义
-   * 
-   * @param ruleClass 规则定义字符串
-   * @return
-   * @throws RuleClassException 规则定义异常
-   */
-  public String addRuleClass(String ruleClass) throws RuleClassException;
-
-  /**
    * 加载规则定义
    * 
    * @param ruleClassId 规则定义ID
@@ -32,13 +23,5 @@ public interface RuleClassService {
    * @throws RuleClassException 规则定义异常
    */
   public RuleClass loadRuleClass(String ruleClassId) throws RuleClassException;
-
-  /**
-   * 失效规则定义
-   * 
-   * @param ruleClassId 规则定义ID
-   * @throws RuleClassException 规则定义异常
-   */
-  public void expireRuleClass(String ruleClassId) throws RuleClassException;
 
 }

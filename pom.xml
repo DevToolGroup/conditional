@@ -5,12 +5,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>group.devtool.conditional</groupId>
-  <artifactId>conditional</artifactId>
+  <groupId>group.devtool.conditional.parent</groupId>
+  <artifactId>parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>conditional</name>
+  <name>conditional-parent</name>
   <url>http://www.devtool.group</url>
 
   <properties>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
