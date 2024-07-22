@@ -714,7 +714,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 				} else if (Character.isLetter(character)) {
 					// 读取变量
 					int index = readDynamicEOF(end, (i, c) -> {
-						return !Character.isLetter(c);
+						return !Character.isLetter(c) && !Character.isDigit(c);
 					}, characters);
 					tokens.add(new Token(characters.subList(end, index), TokenKind.VAR));
 					end = index;

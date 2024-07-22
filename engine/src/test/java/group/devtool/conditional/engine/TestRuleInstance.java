@@ -22,7 +22,7 @@ public class TestRuleInstance implements  RuleInstance {
 
 	@Override
 	public ConditionFunction<?> getDeclaredFunction(String funcName) {
-		return null;
+		return Functions.toMap().get(funcName);
 	}
 
 	@Override
