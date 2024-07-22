@@ -89,8 +89,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
   }
 
   private ExpressionInstance logicNotParse() throws RuleClassException {
-    if (next() == TokenKind.NOT) {
-      pos += 1;
+    if (tokens.get(pos).getKind() == TokenKind.NOT) {
       Token token = tokens.get(pos);
       pos += 1;
       return buildLogicExpressionInstance(null, logicParse(), Logic.get(token.getValue()));
@@ -177,13 +176,12 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
         return buildVariableExpressionInstance(token.getValue(), false);
       }
     }
-    // FIXME: 待验证
     if (token.getKind() == TokenKind.MINUS && tokens.get(pos + 1).getKind() == TokenKind.NUMBER) {
       Token value = tokens.get(pos + 1);
       pos += 1;
       return buildNumberExpressionInstance(value.getValue(), false);
     }
-    throw new RuntimeException();
+    throw RuleClassException.syntaxException("语法错误。位置：" + pos);
   }
 
   /**
@@ -317,8 +315,6 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
   /**
    * 构造 嵌套属性变量引用 表达式
    * 
-   * @param first 变量
-   * @param child 嵌套变量
    * @return 嵌套属性变量 表达式
    */
   protected abstract VariableExpressionInstance buildPropertyVariableExpressionInstance(String name);
@@ -330,7 +326,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
     String name = tokens.get(pos).getValue();
     VariableExpressionInstance first = buildCollectionVariableExpressionInstance(name);
 
-    pos += 2;
+    pos += 1;
     VariableExpressionInstance child = getChildVariable();
     if (null != child) {
       return buildNestVariableExpressionInstance(first, child);
@@ -341,8 +337,6 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
   /**
    * 构造 嵌套索引变量引用 表达式
    * 
-   * @param first 变量
-   * @param child 嵌套变量
    * @return 嵌套索引变量 表达式
    */
   protected abstract VariableExpressionInstance buildCollectionVariableExpressionInstance(String name);

@@ -70,7 +70,7 @@ public class RuleInstanceImpl implements RuleInstance {
 
     // 函数注册
     this.functions = loadBuiltInFunction();
-    if (null != functions && functions.length > 0) {
+    if (null != functions) {
       for (ConditionFunction<?> function : functions) {
         this.functions.put(function.getName(), function);
       }
@@ -122,7 +122,7 @@ public class RuleInstanceImpl implements RuleInstance {
 
     Map<String, FactPropertyClass> pm = factClass.getProperties()
         .stream()
-        .collect(Collectors.toMap(i -> i.getCode(), Function.identity()));
+        .collect(Collectors.toMap(FactPropertyClass::getCode, Function.identity()));
 
     Map<String, Object> map = (Map<String, Object>) value;
     for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -261,13 +261,16 @@ public class RuleInstanceImpl implements RuleInstance {
   }
 
   @Override
-  public Object getExpressionValueOrDefault(String key, Object object) {
-    return memory.getOrDefault(key, object);
-  }
-
-  @Override
-  public void cacheExpressionValue(String key, Object value) {
-    memory.put(key, value);
+  public Object computeExpressionValueIfAbsent(String key, ExpressionInstance.ExpressionCacheSupplier supplier) throws RuleInstanceException {
+    Object v;
+    if ((v = memory.get(key)) == null) {
+      Object newValue;
+      if ((newValue = supplier.get()) != null) {
+        memory.put(key, newValue);
+        return newValue;
+      }
+    }
+    return v;
   }
 
 }

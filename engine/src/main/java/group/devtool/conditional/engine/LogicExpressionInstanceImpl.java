@@ -86,6 +86,9 @@ public class LogicExpressionInstanceImpl implements LogicExpressionInstance {
 
   @Override
   public String getExpressionString() {
+    if (null == left) {
+      return logic.op() + right.getExpressionString();
+    }
     return left.getExpressionString() + logic.op() + right.getExpressionString();
   }
 

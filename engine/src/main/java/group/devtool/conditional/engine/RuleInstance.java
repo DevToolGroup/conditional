@@ -65,17 +65,9 @@ public interface RuleInstance {
    * 查询表达式缓存结果
    * 
    * @param key 表达式唯一值
-   * @param object 默认值
+   * @param supplier 默认值
    * @return 表达式缓存结果
    */
-  Object getExpressionValueOrDefault(String key, Object object);
-
-  /**
-   * 缓存表达式执行结果
-   * 
-   * @param key 表达式唯一值
-   * @param value 表达式执行结果
-   */
-  void cacheExpressionValue(String key, Object value);
+  Object computeExpressionValueIfAbsent(String key, ExpressionInstance.ExpressionCacheSupplier supplier) throws RuleInstanceException;
 
 }

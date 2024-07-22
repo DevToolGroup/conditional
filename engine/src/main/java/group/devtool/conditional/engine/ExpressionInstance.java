@@ -28,9 +28,12 @@ public interface ExpressionInstance {
 
   default Object getCacheObject(RuleInstance context) throws RuleInstanceException {
     String key = this.getExpressionString();
-    Object value = context.getExpressionValueOrDefault(key, getObject(context));
-    context.cacheExpressionValue(key, value);
-    return value;
+    return context.computeExpressionValueIfAbsent(key, () -> getObject(context));
   }
 
+  public interface ExpressionCacheSupplier {
+
+    public Object get() throws RuleInstanceException;
+
+  }
 }

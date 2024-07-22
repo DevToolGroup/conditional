@@ -28,11 +28,20 @@ public class ExpressionLoaderTest {
 
   public String success;
 
+  private String negative;
+
+  public List<Character> ns = new ArrayList<>();
+
   @Before
   public void read() {
     success = "user.id != \"1\" && user.id != 1 && user.id == order.userId || (order.amount > 100 && order.amount < 500) && (currentDayScore < 10000 || 3 * 5.1b < 20) && true && !var \n";
     for (int i = 0; i < success.length(); i++) {
       cs.add(success.charAt(i));
+    }
+
+    negative = "user.id != -1\n";
+    for (int i = 0; i < negative.length(); i++) {
+      ns.add(negative.charAt(i));
     }
   }
 
@@ -52,5 +61,18 @@ public class ExpressionLoaderTest {
     }
 
   }
+
+  @Test
+  public void testNegativeExpressionLoader() {
+    ExpressionLoader loader = new ExpressionLoader();
+    try {
+      loader.load(0, ns, null);
+      ExpressionToken token = loader.pop();
+      List<Token> tokens = token.getTokens();
+      assertEquals(TokenKind.MINUS, tokens.get(4).getKind());
+    } catch (RuleClassException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

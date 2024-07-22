@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -107,6 +108,8 @@ public class ExpressionClassTest {
     for (int i = 0; i < afnSuccess.length(); i++) {
       afnCS.add(afnSuccess.charAt(i));
     }
+
+
 
   }
 
@@ -384,5 +387,39 @@ public class ExpressionClassTest {
     assertEquals("SET(200/1)*2", right.getExpressionString());
 
   }
+
+  @Test
+  public void testNumberExpressionClass() {
+    String negative = "user.id != -1\n";
+    List<Character> ns = new ArrayList<>();
+    for (int i = 0; i < negative.length(); i++) {
+      ns.add(negative.charAt(i));
+    }
+    ExpressionLoader loader = new ExpressionLoader();
+    ExpressionToken token;
+		try {
+			loader.load(0, ns, null);
+      token = loader.pop();
+
+		} catch (RuleClassException e) {
+			throw new RuntimeException(e);
+		}
+    VariableExpressionClass expression = null;
+    try {
+      expression = new VariableExpressionClass(token.getTokens());
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    ExpressionInstance instance = expression.getInstance();
+    if (instance instanceof CompareExpressionInstance) {
+      CompareExpressionInstance compare = (CompareExpressionInstance) instance;
+      ExpressionInstance left = compare.left();
+      Assert.assertEquals("user.id", left.getExpressionString());
+
+      ExpressionInstance right = compare.right();
+      Assert.assertEquals("-1", right.getExpressionString());
+    }
+	}
 
 }

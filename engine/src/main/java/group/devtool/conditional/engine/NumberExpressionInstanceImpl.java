@@ -31,7 +31,6 @@ public class NumberExpressionInstanceImpl implements NumberExpressionInstance {
 	private Object value;
 
 	public NumberExpressionInstanceImpl(String value, boolean positive) throws RuleClassException {
-		this.originValue = value;
 		if (value.endsWith("f")) {
 			type = Float.class;
 			Float fv = Float.parseFloat(value.substring(0, value.length() - 1));
@@ -65,6 +64,7 @@ public class NumberExpressionInstanceImpl implements NumberExpressionInstance {
 				throw RuleClassException.syntaxException("数字超过已知范围");
 			}
 		}
+		this.originValue = this.value.toString();
 	}
 
 	@Override
