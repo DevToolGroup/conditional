@@ -29,7 +29,7 @@ public class CharAtFunction implements ConditionFunction<Character> {
     if (target instanceof String && index instanceof Integer) {
       return ((String) target).charAt((Integer)index);
     } else {
-      throw RuleInstanceException.functionException("LEN函数需要一个字符串，列表，字典参数");
+      throw RuleInstanceException.functionException("AT函数需要一个字符串，列表，字典参数");
     }
   }
 

@@ -10,7 +10,9 @@
  */
 package group.devtool.conditional.engine;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
@@ -23,7 +25,7 @@ public class NowFunction implements ConditionFunction<Date> {
 
   @Override
   public Date apply(Object... args) throws RuleInstanceFunctionException {
-    if (null != args && args.length != 0) {
+    if (null != args && args.length != 0 || Arrays.stream(args).anyMatch(Objects::isNull)) {
       throw RuleInstanceException.functionException("NOW函数不需要参数");
     }
     return new Date();

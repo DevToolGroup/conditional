@@ -30,6 +30,13 @@
       <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.26.0</version> <!-- 请根据项目需要选择合适的版本 -->
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

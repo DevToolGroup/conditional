@@ -10,8 +10,10 @@
  */
 package group.devtool.conditional.engine;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
@@ -24,7 +26,7 @@ public class ContainsFunction implements ConditionFunction<Boolean> {
 
   @Override
   public Boolean apply(Object... args) throws RuleInstanceFunctionException {
-    if (null == args || args.length != 2) {
+    if (null == args || args.length != 2 || Arrays.stream(args).anyMatch(Objects::isNull)) {
       throw RuleInstanceException.functionException("IN函数需要两个参数");
     }
     Object collection = args[0];
@@ -33,10 +35,10 @@ public class ContainsFunction implements ConditionFunction<Boolean> {
     if (collection instanceof String && element instanceof String) {
       return ((String)collection).contains((String)element);
     }
-    if (collection instanceof List && element instanceof Object) {
+    if (collection instanceof List && element != null) {
       return ((List<?>)collection).contains(element);
     }
-    if (collection instanceof Map && element instanceof Object) {
+    if (collection instanceof Map && element != null) {
       return ((Map<?, ?>)collection).containsKey(element);
     }
     return false;

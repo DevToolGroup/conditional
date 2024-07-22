@@ -197,5 +197,3 @@ include::{sourcedir}/CustomFunctionExample.java[]
 
 === 基本类型中的List，Map嵌套结构
 目前暂不支持类似 `List<Map<String, List<>>>` 结构的嵌套类型定义
-
-=== 数值表达式中对于负数的验证以及其他函数场景验证

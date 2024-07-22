@@ -34,9 +34,6 @@ public class SumFunction implements ConditionFunction<Number> {
       throw RuleInstanceException.functionException("SUM函数需要一个列表类型参数");
     }
 
-    int intResult = 0;
-    double doubleResult = 0.0;
-    float floatResult = 0.0f;
     BigDecimal decimalResult = BigDecimal.ZERO;
 
     List<?> listTarget = (List<?>) target;
@@ -47,13 +44,13 @@ public class SumFunction implements ConditionFunction<Number> {
 			Number number = (Number) object;
 
       if (object instanceof Integer) {
-        intResult += number.intValue();
+        decimalResult = decimalResult.add(BigDecimal.valueOf(number.intValue()));
 
       } else if (object instanceof Double) {
-        doubleResult += number.doubleValue();
+        decimalResult = decimalResult.add(BigDecimal.valueOf(number.doubleValue()));
 
       } else if (object instanceof Float) {
-        floatResult += number.floatValue();
+        decimalResult = decimalResult.add(BigDecimal.valueOf(number.floatValue()));
 
       } else if (object instanceof BigDecimal) {
         decimalResult = decimalResult.add((BigDecimal) object);
@@ -63,7 +60,7 @@ public class SumFunction implements ConditionFunction<Number> {
       }
 
     }
-    return intResult;
+    return decimalResult;
   }
 
 }

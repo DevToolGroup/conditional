@@ -32,9 +32,13 @@ public class AbsFunction implements ConditionFunction<Number> {
     } else if (target instanceof Float) {
       return Math.abs((Float) target);
     } else if (target instanceof BigDecimal) {
-      return Math.abs(((BigDecimal) target).doubleValue());
+      return ((BigDecimal) target).abs();
+    } else if (target instanceof Integer) {
+      return Math.abs((Integer)target);
+    } else if (target instanceof Long) {
+      return Math.abs((Long)target);
     } else {
-      throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
+      throw RuleInstanceException.functionException("ABS函数只需要一个数字参数");
     }
   }
 

@@ -10,7 +10,9 @@
  */
 package group.devtool.conditional.engine;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import group.devtool.conditional.engine.RuleInstanceException.RuleInstanceFunctionException;
 
@@ -23,10 +25,14 @@ public class PutFunction implements ConditionFunction<Void> {
 
   @Override
   public Void apply(Object... args) throws RuleInstanceFunctionException {
-    if (null == args || args.length != 3) {
+    if (null == args || args.length != 3 || Arrays.stream(args).anyMatch(Objects::isNull)) {
       throw RuleInstanceException.functionException("PUT函数需要三个参数");
     }
     Object target = args[0];
+    // 校验args[1] 是否是字符串类型
+    if (!(args[1] instanceof String)) {
+      throw RuleInstanceException.functionException("PUT函数赋值操作异常，参数类型必须为String");
+    }
     String property = (String)args[1];
     Object value = args[2];
 
