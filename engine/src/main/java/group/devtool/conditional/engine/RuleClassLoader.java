@@ -17,10 +17,11 @@ public interface RuleClassLoader {
 
   /**
    * 根据实际情况加载规则定义
-   * 
+   *
+   * @param dl 规则定义文本
    * @return 规则定义
    * @throws RuleClassException 规则定义异常
    */
-  public RuleClass load() throws RuleClassException;
+  public RuleClass load(String dl) throws RuleClassException;
 
 }

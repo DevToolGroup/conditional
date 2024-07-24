@@ -42,7 +42,7 @@ public class FactClassLoaderTest {
   @Test
   public void testFactClassLoader() {
     FactClassLoader loader = new FactClassLoader();
-    ReteRuleClass ruleClass = new ReteRuleClass("id");
+    CacheRuleClass ruleClass = new CacheRuleClass("id");
     try {
       int end = loader.load(0, cs, ruleClass);
       assertEquals(success.length(), end);

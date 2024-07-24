@@ -23,6 +23,9 @@ public class CollectionVariableExpressionInstanceImpl implements VariableExpress
   @Override
   public Object getObject(RuleInstance context) throws RuleInstanceException {
     Object value = context.peek();
+    if (value == null) {
+      return null;
+    }
     if (value instanceof Collection) {
       return ((Collection<?>) value).toArray()[name];
     } else {

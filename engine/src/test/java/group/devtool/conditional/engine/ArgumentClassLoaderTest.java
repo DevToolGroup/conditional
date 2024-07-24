@@ -37,7 +37,7 @@ public class ArgumentClassLoaderTest {
   @Test
   public void testLoadArgument() {
     ArgumentClassLoader loader = new ArgumentClassLoader();
-    ReteRuleClass ruleClass = new ReteRuleClass("id");
+    CacheRuleClass ruleClass = new CacheRuleClass("id");
     try {
       int end = loader.load(0, cs, ruleClass);
       Collection<ArgumentClass> arguments = ruleClass.getArgumentClasses();

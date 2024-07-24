@@ -1,6 +1,6 @@
 package group.devtool.conditional.documentation;
 
-import group.devtool.conditional.engine.ReteRuleClassLoader;
+import group.devtool.conditional.engine.CacheRuleClassLoader;
 import group.devtool.conditional.engine.RuleClass;
 import group.devtool.conditional.engine.RuleClassException;
 import group.devtool.conditional.engine.RuleClassService;
@@ -14,8 +14,14 @@ import java.util.Scanner;
  */
 public class ExampleResourceRuleClassService implements RuleClassService {
 
+	private final String ruleClassFile;
+
+	public ExampleResourceRuleClassService() {
+		this.ruleClassFile = "rule.dl";
+	}
+
 	@Override
-	public RuleClass loadRuleClass(String ruleClassFile) throws RuleClassException {
+	public RuleClass loadRuleClass() throws RuleClassException {
 		InputStream inputStream = ExampleResourceRuleClassService.class.getClassLoader().getResourceAsStream(ruleClassFile);
 		StringBuilder builder = new StringBuilder();
 		if (inputStream == null) {
@@ -27,8 +33,8 @@ public class ExampleResourceRuleClassService implements RuleClassService {
 			builder.append("\n");
 		}
 		scanner.close();
-		ReteRuleClassLoader loader = new ReteRuleClassLoader(ruleClassFile, builder.toString());
-		return loader.load();
+		CacheRuleClassLoader loader = new CacheRuleClassLoader(ruleClassFile);
+		return loader.load(builder.toString());
 	}
 
 

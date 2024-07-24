@@ -10,11 +10,17 @@
  */
 package group.devtool.conditional.engine;
 
+
 /**
  * 表达式实例接口
  */
 public interface ExpressionInstance {
 
+  /**
+   * 表达式字符串
+   *
+   * @return 字符串
+   */
   public String getExpressionString();
 
   /**

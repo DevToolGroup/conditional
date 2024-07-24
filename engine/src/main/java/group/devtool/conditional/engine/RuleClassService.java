@@ -17,11 +17,10 @@ public interface RuleClassService {
 
   /**
    * 加载规则定义
-   * 
-   * @param ruleClassId 规则定义ID
+   *
    * @return 规则定义
    * @throws RuleClassException 规则定义异常
    */
-  public RuleClass loadRuleClass(String ruleClassId) throws RuleClassException;
+  public RuleClass loadRuleClass() throws RuleClassException;
 
 }

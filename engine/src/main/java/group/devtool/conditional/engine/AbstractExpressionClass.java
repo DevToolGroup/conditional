@@ -28,7 +28,7 @@ public abstract class AbstractExpressionClass implements ExpressionClass {
 
   private int pos;
 
-  private int max;
+  private final int max;
 
   public AbstractExpressionClass(List<Token> tokens) throws RuleClassException {
     this.tokens = tokens;

@@ -16,7 +16,7 @@ public class RuleInstanceServiceProvider {
   private RuleInstanceService service;
 
   public RuleInstanceServiceProvider(RuleClassService ruleClassService) {
-    this.service = new ReteRuleInstanceService(ruleClassService);
+    this.service = new RuleInstanceServiceImpl(ruleClassService);
   }
 
   public RuleInstanceServiceProvider(RuleInstanceService service) {

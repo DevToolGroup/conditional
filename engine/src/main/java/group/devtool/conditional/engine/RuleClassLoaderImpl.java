@@ -10,23 +10,21 @@
  */
 package group.devtool.conditional.engine;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * 常规解释器模式的规则加载器
+ */
+public class RuleClassLoaderImpl extends AbstractRuleClassLoader {
 
-public class VariableExpressionClass extends GenericExpressionClass {
+  private final String id;
 
-  private List<VariableReference> references;
-
-  public VariableExpressionClass(List<Token> tokens) throws RuleClassException {
-    super(tokens);
+  public RuleClassLoaderImpl(String id) {
+    super();
+    this.id = id;
   }
 
   @Override
-  public List<VariableReference> getVariableReferences() {
-    if (null == references) {
-      references = new ArrayList<>();
-    }
-    return references;
+  protected AbstractRuleClass buildRuleClass() {
+    return new RuleClassImpl(id);
   }
-
+  
 }

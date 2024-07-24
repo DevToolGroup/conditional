@@ -27,8 +27,6 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
 	public static final Character ASSIGN = '=';
 
-	public static final Character EMPTY = ' ';
-
 	public static final Character LF = '\n';
 
 	public static final Character COMMENT = '#';
@@ -37,19 +35,19 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 
 	public static final Character COMMA = ',';
 
-	private List<Character> characters = new ArrayList<>();
+	private final List<Character> characters = new ArrayList<>();
 
-	private RuleElementClassLoader loader;
+	private final RuleElementClassLoader loader;
 
-	public AbstractRuleClassLoader(String dl) {
-		for (int i = 0; i < dl.length(); i++) {
-			characters.add(dl.charAt(i));
-		}
+	public AbstractRuleClassLoader() {
 		this.loader = new RuleElementClassLoader();
 	}
 
 	@Override
-	public RuleClass load() throws RuleClassException {
+	public RuleClass load(String dl) throws RuleClassException {
+		for (int i = 0; i < dl.length(); i++) {
+			characters.add(dl.charAt(i));
+		}
 		AbstractRuleClass ruleClass = buildRuleClass();
 		loader.load(0, characters, ruleClass);
 		return ruleClass;
@@ -522,21 +520,21 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 	 */
 	public static class ConditionClassLoader extends AbstractElementClassLoader {
 
-		private static String DECLARE = "IF";
+		private static final String DECLARE = "IF";
 
-		private static String END = "END";
+		private static final String END = "END";
 
-		private static String THEN = "THEN";
+		private static final String THEN = "THEN";
 
-		private ElementClassLoader declareLoader = new IgnoreKeywordLoader(DECLARE);
+		private final ElementClassLoader declareLoader = new IgnoreKeywordLoader(DECLARE);
 
-		private ExpressionLoader expressionLoader = new ExpressionLoader();
+		private final ExpressionLoader expressionLoader = new ExpressionLoader();
 
-		private ElementClassLoader thenLoader = new IgnoreKeywordLoader(THEN);
+		private final ElementClassLoader thenLoader = new IgnoreKeywordLoader(THEN);
 
-		private ExpressionLoader actionLoader = new ExpressionLoader();
+		private final ExpressionLoader actionLoader = new ExpressionLoader();
 
-		private ElementClassLoader endLoader = new IgnoreKeywordLoader(END);
+		private final ElementClassLoader endLoader = new IgnoreKeywordLoader(END);
 
 		public ConditionClassLoader() {
 

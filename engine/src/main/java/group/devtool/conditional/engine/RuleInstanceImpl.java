@@ -24,20 +24,30 @@ import java.util.stream.Collectors;
  */
 public class RuleInstanceImpl implements RuleInstance {
 
+  private final boolean isConstraintArguments;
+
+  private final boolean isIgnoreResult;
+
   private boolean initialized = false;
 
-  private LinkedList<Object> objects = new LinkedList<>();
+  private final LinkedList<Object> objects = new LinkedList<>();
 
-  private Map<String, Object> memory = new HashMap<>();
+  private final Map<String, Object> memory = new HashMap<>();
 
   private Map<String, ConditionFunction<?>> functions = new HashMap<>();
 
-  private RuleClass ruleClass;
+  private final RuleClass ruleClass;
 
   private Map<String, Object> result;
 
   public RuleInstanceImpl(RuleClass ruleClass) {
+    this(ruleClass, true, true);
+  }
+
+  public RuleInstanceImpl(RuleClass ruleClass, boolean isConstraintArguments, boolean isIgnoreResult) {
     this.ruleClass = ruleClass;
+    this.isConstraintArguments = isConstraintArguments;
+    this.isIgnoreResult = isIgnoreResult;
   }
 
   @Override
@@ -65,8 +75,11 @@ public class RuleInstanceImpl implements RuleInstance {
     if (this.initialized) {
       throw RuleInstanceException.initException("规则：" + ruleClass.getId() + " 已实例化");
     }
-    // 校验参数
-    valid(params);
+
+    if (isConstraintArguments) {
+      // 校验参数
+      valid(params);
+    }
 
     // 函数注册
     this.functions = loadBuiltInFunction();
@@ -181,10 +194,12 @@ public class RuleInstanceImpl implements RuleInstance {
   @Override
   public Map<String, Object> invoke() throws RuleInstanceException {
     ruleClass.getConditionGroup().invoke(this);
-    FactClass factClass = ruleClass.getFactClass(ruleClass.getReturnClass().getType());
 
-    // 过滤返回结果
-    ignoreResult(this.result, factClass.getProperties());
+    if (isIgnoreResult) {
+      FactClass factClass = ruleClass.getFactClass(ruleClass.getReturnClass().getType());
+      // 过滤返回结果
+      ignoreResult(this.result, factClass.getProperties());
+    }
     return this.result;
   }
 

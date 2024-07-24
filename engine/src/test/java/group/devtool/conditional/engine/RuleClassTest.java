@@ -15,15 +15,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import group.devtool.conditional.engine.Rete.RootNode;
-import group.devtool.conditional.engine.Rete.ReteNode;
-import group.devtool.conditional.engine.Rete.AlphaNode;
-import group.devtool.conditional.engine.Rete.TerminateNode;
+import group.devtool.conditional.engine.Tree.Node;
+import group.devtool.conditional.engine.Tree.VariableNode;
+import group.devtool.conditional.engine.Tree.TerminateNode;
 
 public class RuleClassTest {
 
@@ -74,10 +71,10 @@ public class RuleClassTest {
 
   @Test
   public void testRuleClass() {
-    ReteRuleClassLoader loader = new ReteRuleClassLoader("id", dl);
+    CacheRuleClassLoader loader = new CacheRuleClassLoader("id");
     RuleClass ruleClass = null;
     try {
-      ruleClass = loader.load();
+      ruleClass = loader.load(dl);
     } catch (RuleClassException e) {
       e.printStackTrace();
       fail(e.getMessage());
@@ -139,13 +136,13 @@ public class RuleClassTest {
 
     ConditionClassGroup conditionClassGroup = ruleClass.getConditionGroup();
     assertNotNull(conditionClassGroup);
-    assertTrue(conditionClassGroup instanceof ReteConditionClassGroup);
-    ReteConditionClassGroup rcc = (ReteConditionClassGroup) conditionClassGroup;
+    assertTrue(conditionClassGroup instanceof CacheConditionClassGroup);
+    CacheConditionClassGroup rcc = (CacheConditionClassGroup) conditionClassGroup;
 
-    Rete rete = rcc.getRete();
-    assertEquals(5, rete.getRoot().getChild().size());
+    Tree tree = rcc.getTree();
+    assertEquals(7, tree.getRoot().getChild().size());
 
-    ReteNode v1Child = rete.get(new AlphaNode(rete, "user.id==order.userId"));
+    Node v1Child = tree.get(new VariableNode("user.id==order.userId"));
     assertNotNull(v1Child);
 
     assertEquals(2, v1Child.getChild().size());
@@ -154,27 +151,27 @@ public class RuleClassTest {
     assertTrue(v1Child.getChild().stream()
         .anyMatch(i -> i.getKey().equals("user.id==order.userId&&order.amount>100&&order.amount<500&&dayScore<10000")));
 
-    ReteNode v11 = v1Child.getChild().stream()
+    Node v11 = v1Child.getChild().stream()
         .filter(i -> i.getKey().equals("user.id==order.userId&&order.amount>500&&dayScore<10000")).findFirst().get();
     assertTrue(v11.getChild().get(0) instanceof TerminateNode);
     TerminateNode t1 = (TerminateNode) v11.getChild().get(0);
     assertEquals("SET(score.score,500)", t1.getActions().get(0).getInstance().getExpressionString());
 
-    ReteNode v12 = v1Child.getChild().stream()
+    Node v12 = v1Child.getChild().stream()
         .filter(i -> i.getKey().equals("user.id==order.userId&&order.amount>100&&order.amount<500&&dayScore<10000"))
         .findFirst().get();
     assertTrue(v12.getChild().get(0) instanceof TerminateNode);
     TerminateNode t2 = (TerminateNode) v12.getChild().get(0);
     assertEquals("SET(score.score,100)", t2.getActions().get(0).getInstance().getExpressionString());
 
-    ReteNode v2 = rete.getRoot().getChild().stream().filter(i -> i.getKey().equals("dayScore<10000")).findFirst().get();
+    Node v2 = tree.get(new VariableNode("dayScore")).getChild().stream().filter(i -> i.getKey().equals("dayScore<10000")).findFirst().get();
     assertEquals(2, v2.getChild().size());
     assertTrue(v2.getChild().stream()
         .anyMatch(i -> i.getKey().equals("order.amount>500&&dayScore<10000")));
     assertTrue(v2.getChild().stream()
         .anyMatch(i -> i.getKey().equals("order.amount<500&&dayScore<10000")));
 
-    ReteNode v3 = v2.getChild().stream().filter(i -> i.getKey().equals("order.amount<500&&dayScore<10000")).findFirst().get();
+    Node v3 = v2.getChild().stream().filter(i -> i.getKey().equals("order.amount<500&&dayScore<10000")).findFirst().get();
     assertEquals("order.amount>100&&order.amount<500&&dayScore<10000", v3.getChild().get(0).getKey());
   }
 

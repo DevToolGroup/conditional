@@ -35,6 +35,7 @@ public class RuleInstanceServiceTest {
 
 		dl += "TYPE User \"用户\"\n";
 		dl += "Integer       id        \"用户ID\"\n";
+		dl += "Boolean       isNew      \"是否新用户\"\n";
 		dl += "List<History> histories \"积分历史\"\n";
 		dl += "END\n";
 
@@ -56,6 +57,18 @@ public class RuleInstanceServiceTest {
 		dl += "CONST Integer dayScore \"当日积分数量\" = SUM(RETRIEVE(dayHistory, \"count\"))\n";
 
 		dl += "IF\n";
+		dl += " user.isNew\n";
+		dl += "THEN\n";
+		dl += " PUT(score, \"score\", 1000)\n";
+		dl += "END\n";
+
+		dl += "IF\n";
+		dl += " user.id == order.userId && order.amount > 500 && dayScore < 10000\n";
+		dl += "THEN\n";
+		dl += " PUT(score, \"score\", 500)\n";
+		dl += "END\n";
+
+		dl += "IF\n";
 		dl += " user.id == order.userId && order.amount > 100 && order.amount < 500 && dayScore < 10000\n";
 		dl += "THEN\n";
 		dl += " PUT(score, \"score\", 100)\n";
@@ -69,15 +82,15 @@ public class RuleInstanceServiceTest {
 	}
 
 	@Test
-	public void invoke() {
-		RuleClassService ruleClassService = new TestRuleClassService();
+	public void invokeSend100Score() {
+		RuleClassService ruleClassService = new TestCacheRuleClassService();
 		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
 		RuleInstanceService instanceService = provider.get();
 
 		Map<String, Object> result = new HashMap<>();
 
 		try {
-			result = instanceService.exec("id", send100Score());
+			result = instanceService.exec(send100Score());
 			assertEquals(100, result.get("score"));
 		} catch (RuleInstanceException e) {
 			e.printStackTrace();
@@ -87,8 +100,17 @@ public class RuleInstanceServiceTest {
 			fail(e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void invokeSend500Score() {
+		RuleClassService ruleClassService = new TestCacheRuleClassService();
+		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
+		RuleInstanceService instanceService = provider.get();
+
+		Map<String, Object> result = new HashMap<>();
 		try {
-			result = instanceService.exec("id", send500Score());
+			result = instanceService.exec(send500Score());
 			assertEquals(500, result.get("score"));
 		} catch (RuleInstanceException e) {
 			e.printStackTrace();
@@ -97,9 +119,18 @@ public class RuleInstanceServiceTest {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
+
+	@Test
+	public void invokeSendNullScore() {
+		RuleClassService ruleClassService = new TestCacheRuleClassService();
+		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
+		RuleInstanceService instanceService = provider.get();
+
+		Map<String, Object> result = new HashMap<>();
 
 		try {
-			result = instanceService.exec("id", sendNullScore());
+			result = instanceService.exec(sendNullScore());
 			assertNull(result.get("score"));
 		} catch (RuleInstanceException e) {
 			e.printStackTrace();
@@ -108,9 +139,18 @@ public class RuleInstanceServiceTest {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
+
+	@Test
+	public void invokeSendMoreDayScore() {
+		RuleClassService ruleClassService = new TestCacheRuleClassService();
+		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
+		RuleInstanceService instanceService = provider.get();
+
+		Map<String, Object> result = new HashMap<>();
 
 		try {
-			result = instanceService.exec("id", sendMoreDayScore());
+			result = instanceService.exec(sendMoreDayScore());
 			assertNull(result.get("score"));
 		} catch (RuleInstanceException e) {
 			e.printStackTrace();
@@ -119,7 +159,60 @@ public class RuleInstanceServiceTest {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
 
+	@Test
+	public void invokeSend1000Score() {
+		RuleClassService ruleClassService = new TestCacheRuleClassService();
+		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
+		RuleInstanceService instanceService = provider.get();
+
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			Map<String, Object> newUser = sendNewUser();
+			result = instanceService.exec(newUser);
+			assertEquals(1000, result.get("score"));
+		} catch (RuleInstanceException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (RuleClassException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void invokeSend500ScoreNoCache() {
+		RuleClassService ruleClassService = new TestRuleClassServiceImpl();
+		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
+		RuleInstanceService instanceService = provider.get();
+
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			result = instanceService.exec(false, false, send500Score());
+			assertEquals(500, result.get("score"));
+		} catch (RuleInstanceException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (RuleClassException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	private Map<String, Object> sendNewUser() {
+		Map<String, Object> result = new HashMap<>();
+
+		Map<String, Object> user = new HashMap<>();
+		user.put("id", 1);
+		user.put("isNew", true);
+		user.put("histories", new ArrayList<>());
+		result.put("user", user);
+
+
+		return result;
 	}
 
 	private Map<String, Object> sendMoreDayScore() {
@@ -226,12 +319,22 @@ public class RuleInstanceServiceTest {
 		return result;
 	}
 
-	public static class TestRuleClassService implements RuleClassService {
+	public static class TestCacheRuleClassService implements RuleClassService {
 
 		@Override
-		public RuleClass loadRuleClass(String ruleClassId) throws RuleClassException {
-			ReteRuleClassLoader loader = new ReteRuleClassLoader("id", dl);
-			return loader.load();
+		public RuleClass loadRuleClass() throws RuleClassException {
+			CacheRuleClassLoader loader = new CacheRuleClassLoader("id");
+			return loader.load(dl);
+		}
+
+	}
+
+	public static class TestRuleClassServiceImpl implements RuleClassService {
+
+		@Override
+		public RuleClass loadRuleClass() throws RuleClassException {
+			RuleClassLoaderImpl loader = new RuleClassLoaderImpl("id");
+			return loader.load(dl);
 		}
 
 	}

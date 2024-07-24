@@ -31,7 +31,7 @@ public class ReteConditionExpressionClass extends GenericExpressionClass {
   }
 
   @Override
-  public List<VariableReference> getVariableReference() {
+  public List<VariableReference> getVariableReferences() {
     if (null == references) {
       references = new ArrayList<>();
     }

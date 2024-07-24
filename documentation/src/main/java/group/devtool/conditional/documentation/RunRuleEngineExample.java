@@ -11,17 +11,17 @@ public class RunRuleEngineExample {
 
 	public static void main(String[] args) throws RuleInstanceException, RuleClassException {
 		// 初始化规则文件加载器
-		RuleClassService ruleClassService = new ResourceRuleClassService();
+		RuleClassService ruleClassService = new ResourceRuleClassService("sendScore.rl");
 
 		// 初始化规则引擎服务
 		RuleInstanceServiceProvider provider = new RuleInstanceServiceProvider(ruleClassService);
 		RuleInstanceService service = provider.get();
 
 		// 执行规则引擎
-		Map<String, Object> result1 = service.exec("sendScore.rl", send100());
+		Map<String, Object> result1 = service.exec(send100());
 		System.out.println("预期赠送积分数量：100，实际赠送积分数量：" + result1.get("score"));
 
-		Map<String, Object> result2 = service.exec("sendScore.rl", send500());
+		Map<String, Object> result2 = service.exec(send500());
 		System.out.println("预期赠送积分数量：500，实际赠送积分数量：" + result2.get("score"));
 	}
 

@@ -19,11 +19,11 @@ import group.devtool.conditional.engine.Operation.Arith;
  */
 public class ArithExpressionInstanceImpl implements ArithExpressionInstance {
 
-  private ExpressionInstance left;
+  private final ExpressionInstance left;
 
-  private Arith arith;
+  private final Arith arith;
 
-  private ExpressionInstance right;
+  private final ExpressionInstance right;
 
   public ArithExpressionInstanceImpl(ExpressionInstance left, Arith arith, ExpressionInstance right) {
     this.left = left;

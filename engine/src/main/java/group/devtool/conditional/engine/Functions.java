@@ -40,7 +40,7 @@ public enum Functions {
 
   private ConditionFunction<?> function;
 
-  private Functions(ConditionFunction<?> function) {
+  Functions(ConditionFunction<?> function) {
     this.function = function;
   }
 

@@ -27,6 +27,9 @@ public class NestVariableExpressionInstanceImpl implements VariableExpressionIns
   @Override
   public Object getObject(RuleInstance context) throws RuleInstanceException {
     Object obj = getter.getObject(context);
+    if (obj == null) {
+      return null;
+    }
     context.push(obj);
     Object value = childGetter.getObject(context);
     context.pop();

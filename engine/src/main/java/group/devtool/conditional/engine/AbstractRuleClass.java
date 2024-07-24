@@ -26,19 +26,19 @@ import group.devtool.conditional.engine.VariableReference.SimpleVariableReferenc
 /**
  * {@link RuleClass} 基本实现
  */
-abstract class AbstractRuleClass implements RuleClass {
+public abstract class AbstractRuleClass implements RuleClass {
 
-  private Map<String, FactClass> factClasses;
+  private final Map<String, FactClass> factClasses;
 
-  private Map<String, ArgumentClass> argumentClasses;
+  private final Map<String, ArgumentClass> argumentClasses;
 
   private ReturnClass returnClass;
 
-  private Map<String, VariableClass> variableClasses;
+  private final Map<String, VariableClass> variableClasses;
 
-  private List<VariableClass> orderVariableClasses;
+  private final List<VariableClass> orderVariableClasses;
 
-  private String id;
+  private final String id;
 
   public AbstractRuleClass(String id) {
     this.id = id;
@@ -174,13 +174,13 @@ abstract class AbstractRuleClass implements RuleClass {
         .collect(Collectors.toList());
 
     for (ExpressionClass expressionClass : conditionExpressions) {
-      checkReference(expressionClass.getVariableReference(), false);
+      checkReference(expressionClass.getVariableReferences(), false);
     }
 
     List<ExpressionClass> actionExpressions = conditions.stream().map(i -> i.getFunctions()).flatMap(List::stream)
         .collect(Collectors.toList());
     for (ExpressionClass expressionClass : actionExpressions) {
-      checkReference(expressionClass.getVariableReference(), true);
+      checkReference(expressionClass.getVariableReferences(), true);
     }
   }
 
@@ -196,7 +196,7 @@ abstract class AbstractRuleClass implements RuleClass {
       }
 
       // 校验变量引用是否符合
-      checkReference(variable.getValueExpression().getVariableReference(), false);
+      checkReference(variable.getValueExpression().getVariableReferences(), false);
     }
   }
 

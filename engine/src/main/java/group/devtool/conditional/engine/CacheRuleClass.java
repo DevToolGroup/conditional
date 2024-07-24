@@ -10,23 +10,18 @@
  */
 package group.devtool.conditional.engine;
 
-import java.util.ArrayList;
-import java.util.List;
+class CacheRuleClass extends AbstractRuleClass {
 
-public class VariableExpressionClass extends GenericExpressionClass {
+  private final ConditionClassGroup conditionGroup;
 
-  private List<VariableReference> references;
-
-  public VariableExpressionClass(List<Token> tokens) throws RuleClassException {
-    super(tokens);
+  public CacheRuleClass(String id) {
+    super(id);
+    this.conditionGroup = new CacheConditionClassGroup();
   }
 
   @Override
-  public List<VariableReference> getVariableReferences() {
-    if (null == references) {
-      references = new ArrayList<>();
-    }
-    return references;
+  public ConditionClassGroup getConditionGroup() {
+    return conditionGroup;
   }
-
+  
 }

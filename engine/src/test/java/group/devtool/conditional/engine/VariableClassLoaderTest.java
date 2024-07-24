@@ -39,7 +39,7 @@ public class VariableClassLoaderTest {
   @Test
   public void testVariableClassLoader() {
     VariableClassLoader loader = new VariableClassLoader();
-    ReteRuleClass ruleClass = new ReteRuleClass("id");
+    CacheRuleClass ruleClass = new CacheRuleClass("id");
     try {
       loader.load(0, cs, ruleClass);
       VariableClass v1 = ruleClass.getVariableClass("score");

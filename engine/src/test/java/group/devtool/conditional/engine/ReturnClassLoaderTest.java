@@ -38,7 +38,7 @@ public class ReturnClassLoaderTest {
   @Test
   public void testReturnClassLoader() {
     ReturnClassLoader loader = new ReturnClassLoader();
-    ReteRuleClass ruleClass = new ReteRuleClass("id");
+    CacheRuleClass ruleClass = new CacheRuleClass("id");
     try {
       int end = loader.load(0, cs, ruleClass);
       assertEquals(success.length() - 1, end);

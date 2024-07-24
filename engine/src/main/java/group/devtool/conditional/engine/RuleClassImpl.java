@@ -10,13 +10,13 @@
  */
 package group.devtool.conditional.engine;
 
-class ReteRuleClass extends AbstractRuleClass {
+class RuleClassImpl extends AbstractRuleClass {
 
   private ConditionClassGroup conditionGroup;
 
-  public ReteRuleClass(String id) {
+  public RuleClassImpl(String id) {
     super(id);
-    this.conditionGroup = new ReteConditionClassGroup();
+    this.conditionGroup = new CacheConditionClassGroup();
   }
 
   @Override

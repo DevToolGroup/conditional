@@ -47,6 +47,10 @@ public class LogicExpressionInstanceImpl implements LogicExpressionInstance {
     Object leftValue = left.getCacheObject(context);
     Object rightValue = right.getCacheObject(context);
 
+    if (null == leftValue || null == rightValue) {
+      return false;
+    }
+
     if (leftValue instanceof Boolean && rightValue instanceof Boolean) {
       return (Boolean)leftValue && (Boolean)rightValue;
     } else {
@@ -58,6 +62,10 @@ public class LogicExpressionInstanceImpl implements LogicExpressionInstance {
     Object leftValue = left.getCacheObject(context);
     Object rightValue = right.getCacheObject(context);
 
+    if (null == leftValue || null == rightValue) {
+        return false;
+    }
+
     if (leftValue instanceof Boolean && rightValue instanceof Boolean) {
       return (Boolean) leftValue || (Boolean) rightValue;
     } else {
@@ -67,6 +75,9 @@ public class LogicExpressionInstanceImpl implements LogicExpressionInstance {
 
   private Object notLogic(RuleInstance context) throws RuleInstanceException {
     Object value = right.getCacheObject(context);
+    if (null == value) {
+      return true;
+    }
     if (value instanceof Boolean) {
       return !(Boolean) value;
     } else {

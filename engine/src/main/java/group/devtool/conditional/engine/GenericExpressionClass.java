@@ -60,7 +60,7 @@ public abstract class GenericExpressionClass extends AbstractExpressionClass {
   @Override
   protected VariableExpressionInstance buildVariableExpressionInstance(String value, boolean hasNest) {
     if (!hasNest) {
-      getVariableReference().add(new SimpleVariableReference(value));
+      getVariableReferences().add(new SimpleVariableReference(value));
     }
     return new VariableExpressionInstanceImpl(value);
   }
@@ -68,7 +68,7 @@ public abstract class GenericExpressionClass extends AbstractExpressionClass {
   @Override
   protected VariableExpressionInstance buildNestVariableExpressionInstance(VariableExpressionInstance first,
       VariableExpressionInstance child) {
-    getVariableReference().add(new NestVariableReference(first, child));
+    getVariableReferences().add(new NestVariableReference(first, child));
     return new NestVariableExpressionInstanceImpl(first, child);
   }
 

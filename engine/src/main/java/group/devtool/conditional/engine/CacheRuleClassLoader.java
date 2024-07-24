@@ -11,20 +11,20 @@
 package group.devtool.conditional.engine;
 
 /**
- * 基于RETE算法实现的规则定义加载器
+ * 参考RETE算法实现的规则定义加载器
  */
-public class ReteRuleClassLoader extends AbstractRuleClassLoader {
+public class CacheRuleClassLoader extends AbstractRuleClassLoader {
 
   private String id;
 
-  public ReteRuleClassLoader(String id, String dl) {
-    super(dl);
+  public CacheRuleClassLoader(String id) {
+    super();
     this.id = id;
   }
 
   @Override
   protected AbstractRuleClass buildRuleClass() {
-    return new ReteRuleClass(id);
+    return new CacheRuleClass(id);
   }
   
 }

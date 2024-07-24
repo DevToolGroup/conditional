@@ -9,21 +9,33 @@ import java.util.Scanner;
  */
 public class ResourceRuleClassService implements RuleClassService {
 
-	@Override
-	public RuleClass loadRuleClass(String ruleClassFile) throws RuleClassException {
+	private String dl;
+
+	private final RuleClassLoader loader;
+
+	public ResourceRuleClassService(RuleClassLoader classLoader) {
+		this.loader = classLoader;
+	}
+
+	public ResourceRuleClassService(String ruleClassFile) throws RuleClassException {
+		this(new CacheRuleClassLoader(ruleClassFile));
 		InputStream inputStream = ResourceRuleClassService.class.getClassLoader().getResourceAsStream(ruleClassFile);
 		StringBuilder builder = new StringBuilder();
 		if (inputStream == null) {
 			throw RuleClassException.ruleClassFileNotFound(ruleClassFile);
 		}
-		Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name());
-		while (scanner.hasNextLine()) {
-			builder.append(scanner.nextLine());
-			builder.append("\n");
+		try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+			while (scanner.hasNextLine()) {
+				builder.append(scanner.nextLine());
+				builder.append("\n");
+			}
 		}
-		scanner.close();
-		ReteRuleClassLoader loader = new ReteRuleClassLoader(ruleClassFile, builder.toString());
-		return loader.load();
+		dl = builder.toString();
+	}
+
+	@Override
+	public RuleClass loadRuleClass() throws RuleClassException {
+		return loader.load(dl);
 	}
 
 
