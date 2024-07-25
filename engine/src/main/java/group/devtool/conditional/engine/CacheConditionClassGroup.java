@@ -11,7 +11,9 @@
 package group.devtool.conditional.engine;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import group.devtool.conditional.engine.Tree.Node;
 import group.devtool.conditional.engine.Tree.JoinNode;
@@ -34,6 +36,20 @@ public class CacheConditionClassGroup implements ConditionClassGroup {
 	public CacheConditionClassGroup() {
 		tree = new Tree();
 		conditions = new ArrayList<>();
+	}
+
+	@Override
+	public List<ConditionClass> getConditions() {
+		return conditions;
+	}
+
+	public void setConditions(List<ConditionClass> conditions) {
+		List<ConditionClass> sortedConditions = conditions.stream()
+						.sorted(Comparator.comparingInt(ConditionClass::getOrder))
+						.collect(Collectors.toList());
+		for (ConditionClass conditionClass : sortedConditions) {
+			addCondition(conditionClass);
+		}
 	}
 
 	@Override
@@ -181,11 +197,6 @@ public class CacheConditionClassGroup implements ConditionClassGroup {
 	@Override
 	public void completed() {
 		tree.clear();
-	}
-
-	@Override
-	public List<ConditionClass> getConditions() {
-		return conditions;
 	}
 
 	public Tree getTree() {

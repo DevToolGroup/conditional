@@ -16,6 +16,9 @@ public class ReturnClassImpl implements ReturnClass {
 
   private String code;
 
+  public ReturnClassImpl() {
+  }
+
   public ReturnClassImpl(String type, String code) {
     this.type = type;
     this.code = code;
@@ -31,4 +34,12 @@ public class ReturnClassImpl implements ReturnClass {
     return type;
   }
 
+  // setter
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 }

@@ -10,10 +10,12 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
+
 /**
  * 全局变量定义
  */
-public interface VariableClass {
+public interface VariableClass extends Serializable {
 
   /**
    * @return 变量类型

@@ -10,16 +10,17 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * 变量引用
  */
-public interface VariableReference {
+public interface VariableReference extends Serializable {
 
-  public static class SimpleVariableReference implements VariableReference {
+  class SimpleVariableReference implements VariableReference {
 
-    private String var;
+    private final String var;
 
     public SimpleVariableReference(String value) {
       this.var = value;
@@ -31,16 +32,15 @@ public interface VariableReference {
 
   }
 
-  public static class NestVariableReference implements VariableReference {
+  class NestVariableReference implements VariableReference {
 
-    private VariableExpressionInstance first;
+    private final ExpressionInstance first;
 
-    private VariableExpressionInstance child;
+    private final VariableExpressionInstance child;
 
-    public NestVariableReference(VariableExpressionInstance first, VariableExpressionInstance child) {
+    public NestVariableReference(ExpressionInstance first, VariableExpressionInstance child) {
       this.first = first;
       this.child = child;
-
     }
 
     public String getName() {
@@ -53,11 +53,7 @@ public interface VariableReference {
 
         @Override
         public boolean hasNext() {
-          if (next instanceof NestVariableExpressionInstanceImpl) {
-            return true;
-          } else {
-            return false;
-          }
+					return next instanceof NestVariableExpressionInstanceImpl;
         }
 
         @Override

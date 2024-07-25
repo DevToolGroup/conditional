@@ -20,6 +20,10 @@ public class FactClassImpl implements FactClass {
 
   private List<FactPropertyClass> properties;
 
+  public FactClassImpl() {
+
+  }
+
   public FactClassImpl(String code, String name, List<FactPropertyClass> properties) {
     this.code = code;
     this.name = name;
@@ -41,4 +45,15 @@ public class FactClassImpl implements FactClass {
     return properties;
   }
 
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setProperties(List<FactPropertyClass> properties) {
+    this.properties = properties;
+  }
 }

@@ -28,17 +28,21 @@ import group.devtool.conditional.engine.VariableReference.SimpleVariableReferenc
  */
 public abstract class AbstractRuleClass implements RuleClass {
 
-  private final Map<String, FactClass> factClasses;
+  private Map<String, FactClass> factClasses;
 
-  private final Map<String, ArgumentClass> argumentClasses;
+  private Map<String, ArgumentClass> argumentClasses;
 
   private ReturnClass returnClass;
 
-  private final Map<String, VariableClass> variableClasses;
+  private Map<String, VariableClass> variableClasses;
 
-  private final List<VariableClass> orderVariableClasses;
+  private List<VariableClass> orderVariableClasses;
 
-  private final String id;
+  private String id;
+
+  public AbstractRuleClass() {
+
+  }
 
   public AbstractRuleClass(String id) {
     this.id = id;
@@ -53,9 +57,17 @@ public abstract class AbstractRuleClass implements RuleClass {
     return id;
   }
 
+  public void setId(String id) {
+    this.id = id;
+  }
+
   @Override
   public Collection<FactClass> getFactClasses() {
     return factClasses.values();
+  }
+
+  public void setFactClasses(Map<String, FactClass> factClasses) throws RuleClassException {
+    this.factClasses = factClasses;
   }
 
   @Override
@@ -101,6 +113,12 @@ public abstract class AbstractRuleClass implements RuleClass {
   @Override
   public List<VariableClass> getVariableClasses() {
     return orderVariableClasses;
+  }
+
+  // setter variableClasses
+  public void setVariableClasses(List<VariableClass> variableClasses) throws RuleClassException {
+    this.variableClasses = variableClasses.stream().collect(Collectors.toMap(VariableClass::getCode, i -> i));
+    this.orderVariableClasses = variableClasses;
   }
 
   public void addVariableClass(VariableClass variableClass) {

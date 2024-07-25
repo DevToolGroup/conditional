@@ -20,6 +20,10 @@ import group.devtool.conditional.engine.VariableReference.SimpleVariableReferenc
 
 public abstract class GenericExpressionClass extends AbstractExpressionClass {
 
+  public GenericExpressionClass() {
+    super();
+  }
+
   public GenericExpressionClass(List<Token> tokens) throws RuleClassException {
     super(tokens);
   }
@@ -66,7 +70,7 @@ public abstract class GenericExpressionClass extends AbstractExpressionClass {
   }
 
   @Override
-  protected VariableExpressionInstance buildNestVariableExpressionInstance(VariableExpressionInstance first,
+  protected VariableExpressionInstance buildNestVariableExpressionInstance(ExpressionInstance first,
       VariableExpressionInstance child) {
     getVariableReferences().add(new NestVariableReference(first, child));
     return new NestVariableExpressionInstanceImpl(first, child);

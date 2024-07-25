@@ -23,6 +23,10 @@ public class ConditionClassImpl implements ConditionClass {
 
   private Integer order;
 
+  public ConditionClassImpl() {
+
+  }
+
   public ConditionClassImpl(ExpressionClass condition, List<ExpressionClass> actions) {
     this.condition = condition;
     this.actions = actions;
@@ -33,14 +37,25 @@ public class ConditionClassImpl implements ConditionClass {
     return condition;
   }
 
+  public void setCondition(ExpressionClass condition) {
+    this.condition = condition;
+  }
+
   @Override
   public List<ExpressionClass> getFunctions() {
     return actions;
+  }
+  public void setFunctions(List<ExpressionClass> actions) {
+    this.actions = actions;
   }
 
   @Override
   public Integer getOrder() {
     return order;
+  }
+
+  public void setOrder(int order) {
+    this.order = order;
   }
 
   @Override

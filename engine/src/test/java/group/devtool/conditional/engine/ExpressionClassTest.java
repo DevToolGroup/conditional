@@ -422,4 +422,34 @@ public class ExpressionClassTest {
     }
 	}
 
+  @Test
+  public void testFuncVariableExpressionClass() {
+    String negative = "ADD()[0]\n";
+    List<Character> ns = new ArrayList<>();
+    for (int i = 0; i < negative.length(); i++) {
+      ns.add(negative.charAt(i));
+    }
+    ExpressionLoader loader = new ExpressionLoader();
+    ExpressionToken token;
+    try {
+      loader.load(0, ns, null);
+      token = loader.pop();
+
+    } catch (RuleClassException e) {
+      throw new RuntimeException(e);
+    }
+    VariableExpressionClass expression = null;
+    try {
+      expression = new VariableExpressionClass(token.getTokens());
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    ExpressionInstance instance = expression.getInstance();
+    if (instance instanceof VariableExpressionInstance) {
+      VariableExpressionInstance variable = (VariableExpressionInstance) instance;
+      assertTrue(true);
+    }
+  }
+
 }

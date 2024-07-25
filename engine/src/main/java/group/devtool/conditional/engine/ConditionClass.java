@@ -10,12 +10,13 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 规则条件定义
  */
-public interface ConditionClass {
+public interface ConditionClass extends Serializable {
 
   /**
    * @return 规则条件表达式

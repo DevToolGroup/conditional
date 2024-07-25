@@ -12,11 +12,15 @@ package group.devtool.conditional.engine;
 
 class RuleClassImpl extends AbstractRuleClass {
 
-  private ConditionClassGroup conditionGroup;
+  private final ConditionClassGroup conditionGroup;
 
   public RuleClassImpl(String id) {
+    this(id, new CacheConditionClassGroup());
+  }
+
+  public RuleClassImpl(String id, ConditionClassGroup group) {
     super(id);
-    this.conditionGroup = new CacheConditionClassGroup();
+    this.conditionGroup = group;
   }
 
   @Override

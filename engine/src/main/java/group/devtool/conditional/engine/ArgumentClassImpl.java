@@ -16,6 +16,9 @@ public class ArgumentClassImpl implements ArgumentClass {
 
   private String code;
 
+  public ArgumentClassImpl() {
+  }
+
   public ArgumentClassImpl(String type, String code) {
     this.type = type;
     this.code = code;
@@ -31,4 +34,11 @@ public class ArgumentClassImpl implements ArgumentClass {
     return code;
   }
 
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 }

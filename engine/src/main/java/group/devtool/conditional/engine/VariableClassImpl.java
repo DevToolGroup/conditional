@@ -27,6 +27,9 @@ public class VariableClassImpl implements VariableClass {
 
   private String valueType;
 
+  public VariableClassImpl() {
+  }
+
   public VariableClassImpl(String type, String keyType, String valueType, String code, String name, ExpressionClass valueExpression)
       throws RuleClassException {
     this.type = type;
@@ -41,10 +44,7 @@ public class VariableClassImpl implements VariableClass {
   private void valid() throws RuleClassException {
     ExpressionInstance instance = valueExpression.getInstance();
     DataType dt = DataType.valueOf(type);
-    if (null == dt) {
-      return;
-    }
-    if (instance instanceof LogicExpressionInstance
+		if (instance instanceof LogicExpressionInstance
         || instance instanceof CompareExpressionInstance) {
       if (dt != DataType.Boolean) {
         throw RuleClassException.syntaxException("仅布尔类型变量支持逻辑表达式和比较表达式");
@@ -90,4 +90,27 @@ public class VariableClassImpl implements VariableClass {
     return valueExpression;
   }
 
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setValueExpression(ExpressionClass valueExpression) {
+    this.valueExpression = valueExpression;
+  }
+
+  public void setKeyType(String keyType) {
+    this.keyType = keyType;
+  }
+
+  public void setValueType(String valueType) {
+    this.valueType = valueType;
+  }
 }

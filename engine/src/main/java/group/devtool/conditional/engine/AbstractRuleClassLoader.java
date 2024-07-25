@@ -575,7 +575,7 @@ public abstract class AbstractRuleClassLoader implements RuleClassLoader {
 		@Override
 		protected void loaded(AbstractRuleClass ruleClass) throws RuleClassException {
 			ExpressionToken expressionToken = expressionLoader.pop();
-			ExpressionClass conditionalExpressionClass = new ReteConditionExpressionClass(expressionToken.getTokens());
+			ExpressionClass conditionalExpressionClass = new CacheConditionExpressionClass(expressionToken.getTokens());
 
 			List<ExpressionClass> actions = new ArrayList<>();
 			boolean loop = true;

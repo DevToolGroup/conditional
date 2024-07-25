@@ -10,12 +10,13 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 事实类型定义
  */
-public interface FactClass {
+public interface FactClass extends Serializable {
 
   /**
    * @return 事实编码

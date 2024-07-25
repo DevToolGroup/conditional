@@ -10,10 +10,12 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
+
 /**
  * 返回结果定义
  */
-public interface ReturnClass {
+public interface ReturnClass extends Serializable {
 
   /**
    * @return 返回结果类型

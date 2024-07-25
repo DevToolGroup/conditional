@@ -24,7 +24,7 @@ public class RuleClassLoaderImpl extends AbstractRuleClassLoader {
 
   @Override
   protected AbstractRuleClass buildRuleClass() {
-    return new RuleClassImpl(id);
+    return new RuleClassImpl(id, new ConditionClassGroupImpl());
   }
   
 }

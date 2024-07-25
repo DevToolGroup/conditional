@@ -10,10 +10,12 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
+
 /**
  * 输入参数定义
  */
-public interface ArgumentClass {
+public interface ArgumentClass extends Serializable  {
 
   /**
    * @return 参数类型

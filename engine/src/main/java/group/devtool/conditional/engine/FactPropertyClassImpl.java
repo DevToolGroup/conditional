@@ -25,6 +25,9 @@ public class FactPropertyClassImpl implements FactPropertyClass {
 
   private String keyType;
 
+  public FactPropertyClassImpl() {
+  }
+
   public FactPropertyClassImpl(String type, String keyType, String valueType, String code, String name) {
     this.type = type;
     this.code = code;
@@ -54,4 +57,23 @@ public class FactPropertyClassImpl implements FactPropertyClass {
     return keyType;
   }
 
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setValueType(String valueType) {
+    this.valueType = valueType;
+  }
+
+  public void setKeyType(String keyType) {
+    this.keyType = keyType;
+  }
 }

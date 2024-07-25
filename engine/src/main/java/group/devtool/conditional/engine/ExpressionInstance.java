@@ -11,10 +11,12 @@
 package group.devtool.conditional.engine;
 
 
+import java.io.Serializable;
+
 /**
  * 表达式实例接口
  */
-public interface ExpressionInstance {
+public interface ExpressionInstance extends Serializable {
 
   /**
    * 表达式字符串

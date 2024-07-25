@@ -10,10 +10,12 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
+
 /**
  * 表达式定义
  */
-public interface ExpressionClass extends VariableReferences {
+public interface ExpressionClass extends VariableReferences, Serializable {
   
   public ExpressionInstance getInstance();
 

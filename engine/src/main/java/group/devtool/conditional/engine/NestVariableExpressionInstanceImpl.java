@@ -15,11 +15,11 @@ package group.devtool.conditional.engine;
  */
 public class NestVariableExpressionInstanceImpl implements VariableExpressionInstance {
 
-  private VariableExpressionInstance getter;
+  private ExpressionInstance getter;
 
   private VariableExpressionInstance childGetter;
 
-  public NestVariableExpressionInstanceImpl(VariableExpressionInstance getter, VariableExpressionInstance childGetter) {
+  public NestVariableExpressionInstanceImpl(ExpressionInstance getter, VariableExpressionInstance childGetter) {
     this.getter = getter;
     this.childGetter = childGetter;
   }
@@ -43,7 +43,7 @@ public class NestVariableExpressionInstanceImpl implements VariableExpressionIns
 
   @Override
   public String getName() {
-    return getter.getName();
+    return getter.getExpressionString();
   }
 
 }

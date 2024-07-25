@@ -10,12 +10,13 @@
  */
 package group.devtool.conditional.engine;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * 规则定义
  */
-public interface RuleClass {
+public interface RuleClass extends Serializable {
 
   public String getId();
 
