@@ -62,6 +62,19 @@ public class ExpressionClassTest {
 
   public String sfnSuccess;
 
+  public String nfnSuccess;
+
+  public List<Character> nfnCS = new ArrayList<>();
+
+  public String npfnSuccess;
+
+  public List<Character> npfnCS = new ArrayList<>();
+
+  public String nnfnSuccess;
+
+  public List<Character> nnfnCS = new ArrayList<>();
+
+
   @Before
   public void read() {
     andSuccess = "user.id != 1 && user.id == order.userId && order.amount > 100 && order.amount < 500\n";
@@ -109,7 +122,20 @@ public class ExpressionClassTest {
       afnCS.add(afnSuccess.charAt(i));
     }
 
+    nfnSuccess = "SET()[0]";
+    for (int i = 0; i < nfnSuccess.length(); i++) {
+      nfnCS.add(nfnSuccess.charAt(i));
+    }
 
+    npfnSuccess = "SET().name";
+    for (int i = 0; i < npfnSuccess.length(); i++) {
+      npfnCS.add(npfnSuccess.charAt(i));
+    }
+
+    nnfnSuccess = "SET().SET()";
+    for (int i = 0; i < nnfnSuccess.length(); i++) {
+      nnfnCS.add(nnfnSuccess.charAt(i));
+    }
 
   }
 
@@ -423,16 +449,12 @@ public class ExpressionClassTest {
 	}
 
   @Test
-  public void testFuncVariableExpressionClass() {
-    String negative = "ADD()[0]\n";
-    List<Character> ns = new ArrayList<>();
-    for (int i = 0; i < negative.length(); i++) {
-      ns.add(negative.charAt(i));
-    }
+  public void testFuncCollectionVariableExpressionClass() {
+
     ExpressionLoader loader = new ExpressionLoader();
     ExpressionToken token;
     try {
-      loader.load(0, ns, null);
+      loader.load(0, nfnCS, null);
       token = loader.pop();
 
     } catch (RuleClassException e) {
@@ -446,10 +468,69 @@ public class ExpressionClassTest {
       fail(e.getMessage());
     }
     ExpressionInstance instance = expression.getInstance();
-    if (instance instanceof VariableExpressionInstance) {
-      VariableExpressionInstance variable = (VariableExpressionInstance) instance;
-      assertTrue(true);
+    assertTrue(instance instanceof VariableExpressionInstance);
+
+    VariableExpressionInstance variable = (VariableExpressionInstance) instance;
+    assertEquals("SET()[0]", variable.getExpressionString());
+
+    assertTrue(variable instanceof NestVariableExpressionInstanceImpl);
+    NestVariableExpressionInstanceImpl nest = (NestVariableExpressionInstanceImpl) variable;
+
+    assertEquals("SET()", nest.getName());
+  }
+
+  @Test
+  public void testFuncPropertyVariableExpressionClass() {
+
+    ExpressionLoader loader = new ExpressionLoader();
+    ExpressionToken token;
+    try {
+      loader.load(0, npfnCS, null);
+      token = loader.pop();
+
+    } catch (RuleClassException e) {
+      throw new RuntimeException(e);
     }
+    VariableExpressionClass expression = null;
+    try {
+      expression = new VariableExpressionClass(token.getTokens());
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    ExpressionInstance instance = expression.getInstance();
+    assertTrue(instance instanceof VariableExpressionInstance);
+
+    VariableExpressionInstance variable = (VariableExpressionInstance) instance;
+    assertEquals("SET().name", variable.getExpressionString());
+
+    assertTrue(variable instanceof NestVariableExpressionInstanceImpl);
+    NestVariableExpressionInstanceImpl nest = (NestVariableExpressionInstanceImpl) variable;
+
+    assertEquals("SET()", nest.getName());
+  }
+
+  @Test
+  public void testDoubleFuncPropertyVariableExpressionClass() {
+
+    ExpressionLoader loader = new ExpressionLoader();
+    ExpressionToken token;
+    try {
+      loader.load(0, nnfnCS, null);
+      token = loader.pop();
+
+    } catch (RuleClassException e) {
+      throw new RuntimeException(e);
+    }
+
+    VariableExpressionClass expression = null;
+    try {
+      expression = new VariableExpressionClass(token.getTokens());
+    } catch (RuleClassException e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+
   }
 
 }

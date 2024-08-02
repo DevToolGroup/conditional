@@ -1,0 +1,50 @@
+.treeContainer {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.treeItem {
+  list-style-type: none;
+  position: relative;
+  padding-top: 20px;
+}
+
+.treeItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 20px;
+  background-color: #ccc;
+}
+
+.treeContainer > .treeItem:first-child::before {
+  display: none;
+}
+
+.treeItem:last-child::before {
+  height: 10px;
+}
+
+.treeItem::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.treeContainer > .treeItem:first-child::after {
+  display: none;
+}
+
+.treeContainer > .treeItem:not(:first-child) > .treeContainer > .treeItem:first-child::after {
+  display: none;
+}

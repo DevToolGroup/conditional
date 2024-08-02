@@ -35,7 +35,7 @@ public class CollectionVariableExpressionInstanceImpl implements VariableExpress
 
   @Override
   public String getExpressionString() {
-    return "[+" + name + "+]";
+    return "[" + name + "]";
   }
 
   @Override
