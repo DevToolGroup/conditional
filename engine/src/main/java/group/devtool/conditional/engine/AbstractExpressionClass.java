@@ -1,8 +1,8 @@
 /*
- * The Conditional rule engine, similar to Drools, 
- * introduces the definition of input and output parameters, 
- * thereby demarcating the boundaries between programmers and business personnel. 
- * 
+ * The Conditional rule engine, similar to Drools,
+ * introduces the definition of input and output parameters,
+ * thereby demarcating the boundaries between programmers and business personnel.
+ *
  * It reduces the complexity of rules, making it easier for business staff to maintain and use them.
  *
  * License: GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
@@ -22,347 +22,352 @@ import group.devtool.conditional.engine.Operation.Logic;
  */
 public abstract class AbstractExpressionClass implements ExpressionClass {
 
-  private List<Token> tokens;
+	private List<Token> tokens;
 
-  private ExpressionInstance instance;
+	private ExpressionInstance instance;
 
-  private int pos;
+	private int pos;
 
-  private int max;
+	private int max;
 
-  public AbstractExpressionClass() {
+	public AbstractExpressionClass() {
 
-  }
+	}
 
-  public AbstractExpressionClass(List<Token> tokens) throws RuleClassException {
-    this.tokens = tokens;
-    this.max = tokens.size();
-    this.instance = logicParse();
-    if (null != next()) {
-      throw RuleClassException.syntaxException(pos, tokens.get(pos).getValue());
-    }
-  }
+	public AbstractExpressionClass(List<Token> tokens) throws RuleClassException {
+		this.tokens = tokens;
+		this.max = tokens.size();
+		this.instance = logicParse();
+		if (null != next()) {
+			throw RuleClassException.syntaxException(pos, tokens.get(pos).getValue());
+		}
+	}
 
-  public List<Token> getTokens() {
-    return tokens;
-  }
+	public List<Token> getTokens() {
+		return tokens;
+	}
 
-  public void setTokens(List<Token> tokens) throws RuleClassException {
-    this.tokens = tokens;
-    this.max = tokens.size();
-    this.instance = logicParse();
-    if (null != next()) {
-      throw RuleClassException.syntaxException(pos, tokens.get(pos).getValue());
-    }
-  }
+	public void setTokens(List<Token> tokens) throws RuleClassException {
+		this.tokens = tokens;
+		this.max = tokens.size();
+		this.instance = logicParse();
+		if (null != next()) {
+			throw RuleClassException.syntaxException(pos, tokens.get(pos).getValue());
+		}
+	}
 
-  @Override
-  public ExpressionInstance getInstance() {
-    return instance;
-  }
+	@Override
+	public ExpressionInstance getInstance() {
+		return instance;
+	}
 
-  /**
-   * 表达式语法解析。
-   * 
-   * 表达式语法解析，按照表达式中各个元素的优先级依次解析。
-   * 
-   * @return 表达式实例
-   * @throws RuleClassException 规则定义异常
-   */
-  private ExpressionInstance logicParse() throws RuleClassException {
-    ExpressionInstance left = logicAndParse();
-    if (next() == TokenKind.OR) {
-      pos += 1;
-      Token token = tokens.get(pos);
-      pos += 1;
-      return buildLogicExpressionInstance(left, logicParse(), Logic.get(token.getValue()));
-    }
-    return left;
-  }
+	/**
+	 * 表达式语法解析。
+	 *
+	 * 表达式语法解析，按照表达式中各个元素的优先级依次解析。
+	 *
+	 * @return 表达式实例
+	 * @throws RuleClassException 规则定义异常
+	 */
+	private ExpressionInstance logicParse() throws RuleClassException {
+		ExpressionInstance left = logicAndParse();
+		if (next() == TokenKind.OR) {
+			pos += 1;
+			Token token = tokens.get(pos);
+			pos += 1;
+			return buildLogicExpressionInstance(left, logicParse(), Logic.get(token.getValue()));
+		}
+		return left;
+	}
 
-  /**
-   * 构造 逻辑 表达式
-   * 
-   * 这里之所以做成抽象方法，是为了接下来构造rete网络准备的，
-   * 同时，考虑到后续的场景，可能采用解释模式而非rete模式。
-   * 
-   * @param left  左 表达式
-   * @param right 右 表达式
-   * @param logic 运算符
-   * @return 逻辑 表达式
-   */
-  protected abstract ExpressionInstance buildLogicExpressionInstance(ExpressionInstance left, ExpressionInstance right,
-      Logic logic);
+	/**
+	 * 构造 逻辑 表达式
+	 *
+	 * 这里之所以做成抽象方法，是为了接下来构造rete网络准备的，
+	 * 同时，考虑到后续的场景，可能采用解释模式而非rete模式。
+	 *
+	 * @param left  左 表达式
+	 * @param right 右 表达式
+	 * @param logic 运算符
+	 * @return 逻辑 表达式
+	 */
+	protected abstract ExpressionInstance buildLogicExpressionInstance(ExpressionInstance left, ExpressionInstance right,
+																																		 Logic logic);
 
-  private ExpressionInstance logicAndParse() throws RuleClassException {
-    ExpressionInstance left = logicNotParse();
-    if (next() == TokenKind.AND) {
-      pos += 1;
-      Token token = tokens.get(pos);
-      pos += 1;
-      return buildLogicExpressionInstance(left, logicAndParse(), Logic.get(token.getValue()));
-    }
-    return left;
-  }
+	private ExpressionInstance logicAndParse() throws RuleClassException {
+		ExpressionInstance left = logicNotParse();
+		if (next() == TokenKind.AND) {
+			pos += 1;
+			Token token = tokens.get(pos);
+			pos += 1;
+			return buildLogicExpressionInstance(left, logicAndParse(), Logic.get(token.getValue()));
+		}
+		return left;
+	}
 
-  private ExpressionInstance logicNotParse() throws RuleClassException {
-    if (tokens.get(pos).getKind() == TokenKind.NOT) {
-      Token token = tokens.get(pos);
-      pos += 1;
-      return buildLogicExpressionInstance(null, logicParse(), Logic.get(token.getValue()));
-    }
-    return compareParse();
-  }
+	private ExpressionInstance logicNotParse() throws RuleClassException {
+		if (tokens.get(pos).getKind() == TokenKind.NOT) {
+			Token token = tokens.get(pos);
+			pos += 1;
+			return buildLogicExpressionInstance(null, logicParse(), Logic.get(token.getValue()));
+		}
+		return compareParse();
+	}
 
-  private ExpressionInstance compareParse() throws RuleClassException {
-    ExpressionInstance left = arithParse();
-    if (next() == TokenKind.GT
-        || next() == TokenKind.GE
-        || next() == TokenKind.LT
-        || next() == TokenKind.LE
-        || next() == TokenKind.EQ
-        || next() == TokenKind.NE) {
-      pos += 1;
-      Compare operation = Compare.get(tokens.get(pos).getValue());
-      pos += 1;
-      return buildCompareExpressionInstance(left, operation, arithParse());
-    }
-    return left;
-  }
+	private ExpressionInstance compareParse() throws RuleClassException {
+		ExpressionInstance left = arithParse();
+		if (next() == TokenKind.GT
+						|| next() == TokenKind.GE
+						|| next() == TokenKind.LT
+						|| next() == TokenKind.LE
+						|| next() == TokenKind.EQ
+						|| next() == TokenKind.NE) {
+			pos += 1;
+			Compare operation = Compare.get(tokens.get(pos).getValue());
+			pos += 1;
+			return buildCompareExpressionInstance(left, operation, arithParse());
+		}
+		return left;
+	}
 
-  /**
-   * 构造 判断 表达式
-   * 
-   * @param left  左 表达式
-   * @param right 右 表达式
-   * @return 判断 表达式
-   */
-  protected abstract ExpressionInstance buildCompareExpressionInstance(ExpressionInstance left, Compare operation,
-      ExpressionInstance right);
+	/**
+	 * 构造 判断 表达式
+	 *
+	 * @param left  左 表达式
+	 * @param right 右 表达式
+	 * @return 判断 表达式
+	 */
+	protected abstract ExpressionInstance buildCompareExpressionInstance(ExpressionInstance left, Compare operation,
+																																			 ExpressionInstance right);
 
-  private ExpressionInstance arithParse() throws RuleClassException {
-    ExpressionInstance left = valueParse();
-    if (next() == TokenKind.PLUS
-        || next() == TokenKind.MINUS
-        || next() == TokenKind.MUL
-        || next() == TokenKind.DIV
-        || next() == TokenKind.MOD
-        || next() == TokenKind.POWER) {
-      pos += 1;
-      Token token = tokens.get(pos);
-      pos += 1;
-      return buildArithExpression(left, Arith.get(token.getValue()), valueParse());
-    }
-    return left;
-  }
+	private ExpressionInstance arithParse() throws RuleClassException {
+		ExpressionInstance left = valueParse();
+		while (next() == TokenKind.PLUS || next() == TokenKind.MINUS || next() == TokenKind.MUL
+						|| next() == TokenKind.DIV || next() == TokenKind.MOD || next() == TokenKind.POWER) {
+			if (next() == TokenKind.PLUS || next() == TokenKind.MINUS) {
+				pos += 1;
+				Token token = tokens.get(pos);
+				pos += 1;
+				left = buildArithExpression(left, Arith.get(token.getValue()), arithParse());
+			} else if (next() == TokenKind.MUL || next() == TokenKind.DIV || next() == TokenKind.MOD || next() == TokenKind.POWER) {
+				pos += 1;
+				Token token = tokens.get(pos);
+				pos += 1;
+				left = buildArithExpression(left, Arith.get(token.getValue()), valueParse());
 
-  /**
-   * 构造 算术 表达式
-   * 
-   * @param left  左 表达式
-   * @param right 右 表达式
-   * @param arith 算术运算符
-   * @return 算术 表达式
-   */
-  protected abstract ExpressionInstance buildArithExpression(ExpressionInstance left,
-      Arith arith,
-      ExpressionInstance right);
+			}
+		}
 
-  private ExpressionInstance valueParse() throws RuleClassException {
-    Token token = tokens.get(pos);
-    if (token.getKind() == TokenKind.LPAREN) {
-      pos += 1;
-      ExpressionInstance child = buildChildExpressionInstance(logicParse());
-      pos += 1;
-      return child;
-    }
-    if (token.getKind() == TokenKind.STRING) {
-      return buildStringExpressionInstance(token.getValue());
-    }
-    if (token.getKind() == TokenKind.NUMBER) {
-      return buildNumberExpressionInstance(token.getValue(), true);
-    }
-    if (token.getKind() == TokenKind.VAR) {
-      if (next() == TokenKind.DOT || next() == TokenKind.LBRACKET) {
-        return getVariable();
+		return left;
+	}
 
-      } else if (next() == TokenKind.LPAREN) {
-        ExpressionInstance func = getFunction();
-        VariableExpressionInstance child = getChildVariable();
-        if (null != child) {
-          return buildNestVariableExpressionInstance(func, child);
-        }
-      } else {
-        return buildVariableExpressionInstance(token.getValue(), false);
-      }
-    }
-    if (token.getKind() == TokenKind.MINUS && tokens.get(pos + 1).getKind() == TokenKind.NUMBER) {
-      Token value = tokens.get(pos + 1);
-      pos += 1;
-      return buildNumberExpressionInstance(value.getValue(), false);
-    }
-    throw RuleClassException.syntaxException("语法错误。位置：" + pos);
-  }
+	/**
+	 * 构造 算术 表达式
+	 *
+	 * @param left  左 表达式
+	 * @param right 右 表达式
+	 * @param arith 算术运算符
+	 * @return 算术 表达式
+	 */
+	protected abstract ExpressionInstance buildArithExpression(ExpressionInstance left,
+																														 Arith arith,
+																														 ExpressionInstance right);
 
-  /**
-   * 构造 嵌套 表达式，即：（嵌套表达式）
-   * 
-   * @param logicParse 嵌套表达式
-   * @return 嵌套 表达式
-   */
-  protected abstract ExpressionInstance buildChildExpressionInstance(ExpressionInstance logicParse);
+	private ExpressionInstance valueParse() throws RuleClassException {
+		Token token = tokens.get(pos);
+		if (token.getKind() == TokenKind.LPAREN) {
+			pos += 1;
+			ExpressionInstance child = buildChildExpressionInstance(logicParse());
+			pos += 1;
+			return child;
+		}
+		if (token.getKind() == TokenKind.STRING) {
+			return buildStringExpressionInstance(token.getValue());
+		}
+		if (token.getKind() == TokenKind.NUMBER) {
+			return buildNumberExpressionInstance(token.getValue(), true);
+		}
+		if (token.getKind() == TokenKind.VAR) {
+			if (next() == TokenKind.DOT || next() == TokenKind.LBRACKET) {
+				return getVariable();
 
-  /**
-   * 构造 字符串字面量 表达式
-   * 
-   * @param value 字符串
-   * @return 字符串字面量表达式
-   */
-  protected abstract ExpressionInstance buildStringExpressionInstance(String value);
+			} else if (next() == TokenKind.LPAREN) {
+				ExpressionInstance func = getFunction();
+				VariableExpressionInstance child = getChildVariable();
+				if (null != child) {
+					return buildNestVariableExpressionInstance(func, child);
+				}
+			} else {
+				return buildVariableExpressionInstance(token.getValue(), false);
+			}
+		}
+		if (token.getKind() == TokenKind.MINUS && tokens.get(pos + 1).getKind() == TokenKind.NUMBER) {
+			Token value = tokens.get(pos + 1);
+			pos += 1;
+			return buildNumberExpressionInstance(value.getValue(), false);
+		}
+		throw RuleClassException.syntaxException("语法错误。位置：" + pos);
+	}
 
-  /**
-   * 构造 数字字面量 表达式
-   *
-   * @param value 字符串
-   * @param positive 是否是正数
-   *
-   * @return 数字字面量表达式
-   * @throws RuleClassException
-   * @throws RuleInstanceException
-   */
-  protected abstract ExpressionInstance buildNumberExpressionInstance(String value, boolean positive) throws RuleClassException;
+	/**
+	 * 构造 嵌套 表达式，即：（嵌套表达式）
+	 *
+	 * @param logicParse 嵌套表达式
+	 * @return 嵌套 表达式
+	 */
+	protected abstract ExpressionInstance buildChildExpressionInstance(ExpressionInstance logicParse);
 
-  /**
-   * 构造 变量引用 表达式
-   * 
-   * @param value   变量
-   * @param hasNest 是否存在嵌套变量
-   * @return 变量 表达式
-   */
-  protected abstract VariableExpressionInstance buildVariableExpressionInstance(String value, boolean hasNest);
+	/**
+	 * 构造 字符串字面量 表达式
+	 *
+	 * @param value 字符串
+	 * @return 字符串字面量表达式
+	 */
+	protected abstract ExpressionInstance buildStringExpressionInstance(String value);
 
-  private ExpressionInstance getFunction() throws RuleClassException {
-    String funcName = tokens.get(pos).getValue();
-    pos += 2;
-    List<ExpressionInstance> arguments = new ArrayList<>();
-    // 跳过 （
-    do {
-      if (tokens.get(pos).getKind() == TokenKind.RPAREN) {
-        break;
-      }
-      ExpressionInstance expression = logicParse();
-      arguments.add(expression);
-      if (next() == TokenKind.COMMA) {
-        pos += 2;
-        continue;
-      }
-      if (next() != TokenKind.RPAREN) {
-        throw RuleClassException.syntaxException(pos + 1, "函数定义异常，函数名：" + funcName);
-      }
-      pos += 1;
-    } while (pos < max);
+	/**
+	 * 构造 数字字面量 表达式
+	 *
+	 * @param value 字符串
+	 * @param positive 是否是正数
+	 *
+	 * @return 数字字面量表达式
+	 * @throws RuleClassException
+	 * @throws RuleInstanceException
+	 */
+	protected abstract ExpressionInstance buildNumberExpressionInstance(String value, boolean positive) throws RuleClassException;
 
-    if (pos >= max) {
-      throw RuleClassException.syntaxException("方法调用表达式解析异常");
-    }
-    return buildFunctionExpressionInstance(funcName, arguments);
-  }
+	/**
+	 * 构造 变量引用 表达式
+	 *
+	 * @param value   变量
+	 * @param hasNest 是否存在嵌套变量
+	 * @return 变量 表达式
+	 */
+	protected abstract VariableExpressionInstance buildVariableExpressionInstance(String value, boolean hasNest);
 
-  /**
-   * 构造 方法调用 表达式
-   * 
-   * @param funcName  函数名称
-   * @param arguments 参数列表
-   * @return 方法调用 表达式
-   */
-  protected abstract FunctionExpressionInstance buildFunctionExpressionInstance(String funcName,
-      List<ExpressionInstance> arguments);
+	private ExpressionInstance getFunction() throws RuleClassException {
+		String funcName = tokens.get(pos).getValue();
+		pos += 2;
+		List<ExpressionInstance> arguments = new ArrayList<>();
+		// 跳过 （
+		do {
+			if (tokens.get(pos).getKind() == TokenKind.RPAREN) {
+				break;
+			}
+			ExpressionInstance expression = logicParse();
+			arguments.add(expression);
+			if (next() == TokenKind.COMMA) {
+				pos += 2;
+				continue;
+			}
+			if (next() != TokenKind.RPAREN) {
+				throw RuleClassException.syntaxException(pos + 1, "函数定义异常，函数名：" + funcName);
+			}
+			pos += 1;
+		} while (pos < max);
 
-  private ExpressionInstance getVariable() throws RuleClassException {
-    if (pos >= max) {
-      return null;
-    }
-    ExpressionInstance expressionInstance = valueParse();
-    VariableExpressionInstance child = getChildVariable();
-    if (null != child) {
-      return buildNestVariableExpressionInstance(expressionInstance, child);
-    } else {
-      return expressionInstance;
-    }
-  }
+		if (pos >= max) {
+			throw RuleClassException.syntaxException("方法调用表达式解析异常");
+		}
+		return buildFunctionExpressionInstance(funcName, arguments);
+	}
 
-  /**
-   * 构造 嵌套变量引用 表达式
-   * 
-   * @param first 变量
-   * @param child 嵌套变量
-   * @return 嵌套变量 表达式
-   */
-  protected abstract VariableExpressionInstance buildNestVariableExpressionInstance(ExpressionInstance first,
-      VariableExpressionInstance child);
+	/**
+	 * 构造 方法调用 表达式
+	 *
+	 * @param funcName  函数名称
+	 * @param arguments 参数列表
+	 * @return 方法调用 表达式
+	 */
+	protected abstract FunctionExpressionInstance buildFunctionExpressionInstance(String funcName,
+																																								List<ExpressionInstance> arguments);
 
-  public VariableExpressionInstance getChildVariable() throws RuleClassException {
-    if (pos >= max) {
-      return null;
-    }
-    if (next() == TokenKind.DOT) {
-      pos += 2;
-      return getPropertyVariable();
-    }
-    if (next() == TokenKind.LBRACKET) {
-      pos += 2;
-      return getCollectionVariable();
-    }
-    return null;
-  }
+	private ExpressionInstance getVariable() throws RuleClassException {
+		if (pos >= max) {
+			return null;
+		}
+		ExpressionInstance expressionInstance = valueParse();
+		VariableExpressionInstance child = getChildVariable();
+		if (null != child) {
+			return buildNestVariableExpressionInstance(expressionInstance, child);
+		} else {
+			return expressionInstance;
+		}
+	}
 
-  private VariableExpressionInstance getPropertyVariable() throws RuleClassException {
-    if (pos >= max) {
-      throw RuleClassException.syntaxException(pos, "变量取值语法错误");
-    }
-    String name = tokens.get(pos).getValue();
-    VariableExpressionInstance first = buildPropertyVariableExpressionInstance(name);
+	/**
+	 * 构造 嵌套变量引用 表达式
+	 *
+	 * @param first 变量
+	 * @param child 嵌套变量
+	 * @return 嵌套变量 表达式
+	 */
+	protected abstract VariableExpressionInstance buildNestVariableExpressionInstance(ExpressionInstance first,
+																																										VariableExpressionInstance child);
 
-    VariableExpressionInstance child = getChildVariable();
-    if (null != child) {
-      return buildNestVariableExpressionInstance(first, child);
-    }
-    return first;
-  }
+	public VariableExpressionInstance getChildVariable() throws RuleClassException {
+		if (pos >= max) {
+			return null;
+		}
+		if (next() == TokenKind.DOT) {
+			pos += 2;
+			return getPropertyVariable();
+		}
+		if (next() == TokenKind.LBRACKET) {
+			pos += 2;
+			return getCollectionVariable();
+		}
+		return null;
+	}
 
-  /**
-   * 构造 嵌套属性变量引用 表达式
-   * 
-   * @return 嵌套属性变量 表达式
-   */
-  protected abstract VariableExpressionInstance buildPropertyVariableExpressionInstance(String name);
+	private VariableExpressionInstance getPropertyVariable() throws RuleClassException {
+		if (pos >= max) {
+			throw RuleClassException.syntaxException(pos, "变量取值语法错误");
+		}
+		String name = tokens.get(pos).getValue();
+		VariableExpressionInstance first = buildPropertyVariableExpressionInstance(name);
 
-  private VariableExpressionInstance getCollectionVariable() throws RuleClassException {
-    if (pos >= max) {
-      throw RuleClassException.syntaxException(pos, "变量取值语法错误");
-    }
-    String name = tokens.get(pos).getValue();
-    VariableExpressionInstance first = buildCollectionVariableExpressionInstance(name);
+		VariableExpressionInstance child = getChildVariable();
+		if (null != child) {
+			return buildNestVariableExpressionInstance(first, child);
+		}
+		return first;
+	}
 
-    pos += 1;
-    VariableExpressionInstance child = getChildVariable();
-    if (null != child) {
-      return buildNestVariableExpressionInstance(first, child);
-    }
-    return first;
-  }
+	/**
+	 * 构造 嵌套属性变量引用 表达式
+	 *
+	 * @return 嵌套属性变量 表达式
+	 */
+	protected abstract VariableExpressionInstance buildPropertyVariableExpressionInstance(String name);
 
-  /**
-   * 构造 嵌套索引变量引用 表达式
-   * 
-   * @return 嵌套索引变量 表达式
-   */
-  protected abstract VariableExpressionInstance buildCollectionVariableExpressionInstance(String name);
+	private VariableExpressionInstance getCollectionVariable() throws RuleClassException {
+		if (pos >= max) {
+			throw RuleClassException.syntaxException(pos, "变量取值语法错误");
+		}
+		String name = tokens.get(pos).getValue();
+		VariableExpressionInstance first = buildCollectionVariableExpressionInstance(name);
 
-  private TokenKind next() {
-    if (pos + 1 < max) {
-      return tokens.get(pos + 1).getKind();
-    }
-    return null;
-  }
+		pos += 1;
+		VariableExpressionInstance child = getChildVariable();
+		if (null != child) {
+			return buildNestVariableExpressionInstance(first, child);
+		}
+		return first;
+	}
+
+	/**
+	 * 构造 嵌套索引变量引用 表达式
+	 *
+	 * @return 嵌套索引变量 表达式
+	 */
+	protected abstract VariableExpressionInstance buildCollectionVariableExpressionInstance(String name);
+
+	private TokenKind next() {
+		if (pos + 1 < max) {
+			return tokens.get(pos + 1).getKind();
+		}
+		return null;
+	}
 }

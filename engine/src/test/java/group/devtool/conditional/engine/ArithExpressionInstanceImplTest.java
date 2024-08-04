@@ -28,6 +28,7 @@ public class ArithExpressionInstanceImplTest {
 
 	@Before
 	public void beforeArith() {
+
 		String negative1 = "2 - -1\n";
 		for (int i = 0; i < negative1.length(); i++) {
 			ns1.add(negative1.charAt(i));
@@ -160,6 +161,111 @@ public class ArithExpressionInstanceImplTest {
 			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
 			Assert.assertEquals(-1, value);
 		} catch (RuleClassException | RuleInstanceException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testArithPriority() {
+		String arithPriority = "2 + 2 * 3";
+		List<Character> ns8 = new ArrayList<>();
+		for (int i = 0; i < arithPriority.length(); i++) {
+			ns8.add(arithPriority.charAt(i));
+		}
+
+		ExpressionLoader loader = new ExpressionLoader();
+		try {
+			loader.load(0, ns8, null);
+			ExpressionToken token = loader.pop();
+			VariableExpressionClass expressionClass = new VariableExpressionClass(token.getTokens());
+			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
+			Assert.assertEquals(8, value);
+		} catch (RuleClassException | RuleInstanceException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testNestArithPriority() {
+		String arithPriority = "(2 + 2) * 3";
+		List<Character> ns8 = new ArrayList<>();
+		for (int i = 0; i < arithPriority.length(); i++) {
+			ns8.add(arithPriority.charAt(i));
+		}
+
+		ExpressionLoader loader = new ExpressionLoader();
+		try {
+			loader.load(0, ns8, null);
+			ExpressionToken token = loader.pop();
+			VariableExpressionClass expressionClass = new VariableExpressionClass(token.getTokens());
+			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
+			Assert.assertEquals(12, value);
+		} catch (RuleClassException | RuleInstanceException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testNestArithPriority2() {
+		String arithPriority = "2 * (1 + 2)";
+		List<Character> ns8 = new ArrayList<>();
+		for (int i = 0; i < arithPriority.length(); i++) {
+			ns8.add(arithPriority.charAt(i));
+		}
+
+		ExpressionLoader loader = new ExpressionLoader();
+		try {
+			loader.load(0, ns8, null);
+			ExpressionToken token = loader.pop();
+			VariableExpressionClass expressionClass = new VariableExpressionClass(token.getTokens());
+			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
+			Assert.assertEquals(6, value);
+		} catch (RuleClassException | RuleInstanceException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testNestArithPriority3() {
+		String arithPriority = "2 * 1 + 2";
+		List<Character> ns8 = new ArrayList<>();
+		for (int i = 0; i < arithPriority.length(); i++) {
+			ns8.add(arithPriority.charAt(i));
+		}
+
+		ExpressionLoader loader = new ExpressionLoader();
+		try {
+			loader.load(0, ns8, null);
+			ExpressionToken token = loader.pop();
+			VariableExpressionClass expressionClass = new VariableExpressionClass(token.getTokens());
+			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
+			Assert.assertEquals(4, value);
+		} catch (RuleClassException | RuleInstanceException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testNestArithPriority4() {
+		String arithPriority = "2 * (1 + 2)";
+		List<Character> ns8 = new ArrayList<>();
+		for (int i = 0; i < arithPriority.length(); i++) {
+			ns8.add(arithPriority.charAt(i));
+		}
+
+		ExpressionLoader loader = new ExpressionLoader();
+		try {
+			loader.load(0, ns8, null);
+			ExpressionToken token = loader.pop();
+			VariableExpressionClass expressionClass = new VariableExpressionClass(token.getTokens());
+			Object value = expressionClass.getInstance().getCacheObject(new TestRuleInstance(new HashMap<>()));
+			Assert.assertEquals(6, value);
+		} catch (RuleClassException | RuleInstanceException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
