@@ -35,7 +35,7 @@ public class MaxFunction implements ConditionFunction<Number> {
     } else if (val instanceof BigDecimal && other instanceof BigDecimal) {
       return ((BigDecimal) val).max((BigDecimal) other);
     } else {
-      throw RuleInstanceException.functionException("ROUND函数只需要一个数字参数");
+      throw RuleInstanceException.functionException("MAX函数只需要一个数字参数");
     }
   }
 

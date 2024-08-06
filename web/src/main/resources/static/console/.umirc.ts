@@ -39,6 +39,8 @@ export default defineConfig({
         },
       ]
     },
+    { path: '/condition', component: 'expression' },
+    { path: '/expression', component: 'expr' },
     { path: '/', redirect: '/rule' },
   ],
   plugins: ["@umijs/plugins/dist/react-query"],

@@ -10,6 +10,39 @@ interface DataType {
   name: string;
 }
 
+const TypeEnum = {
+  string: {
+    text: '字符串'
+  },
+  Boolean: {
+    text: '布尔值',
+  },
+  Integer: {
+    text: '整数',
+  },
+  Long: {
+    text: '长整数',
+  },
+  Float: {
+    text: '单精度浮点数',
+  },
+  Double: {
+    text: '双精度浮点数',
+  },
+  Decimal: {
+    text: '任意精度十进制数',
+  },
+  Time: {
+    text: '时间',
+  },
+  List: {
+    text: '列表',
+  },
+  Map: {
+    text: '字典',
+  }
+}
+
 const data: DataType[] = [
   {
     id: 1,
@@ -75,7 +108,7 @@ const Property = ({ record }: PropertyProps) => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<readonly PropertyType[]>([]);
 
-  const columns : ProColumns<PropertyType>[] = [
+  const columns: ProColumns<PropertyType>[] = [
     {
       title: '序号',
       width: '5%',
@@ -93,14 +126,20 @@ const Property = ({ record }: PropertyProps) => {
     {
       title: '类型',
       dataIndex: 'type',
+      valueType: 'select',
+      valueEnum: TypeEnum
     },
     {
       title: '键类型',
       dataIndex: 'keyType',
+      valueType: 'select',
+      valueEnum: TypeEnum
     },
     {
       title: '值类型',
       dataIndex: 'valueType',
+      valueType: 'select',
+      valueEnum: TypeEnum
     },
     {
       title: '操作',
@@ -108,10 +147,10 @@ const Property = ({ record }: PropertyProps) => {
       valueType: 'option',
       dataIndex: 'operation',
       render: (text, record, _, action) => [
-        <a key="editable" onClick={() => {action?.startEditable?.(record.id)}}>
+        <a key="editable" onClick={() => { action?.startEditable?.(record.id) }}>
           编辑
         </a>,
-        <a key="delete" onClick={() => {setDataSource(dataSource.filter((item) => item.id !== record.id))}}>
+        <a key="delete" onClick={() => { setDataSource(dataSource.filter((item) => item.id !== record.id)) }}>
           删除
         </a>,
       ],
@@ -125,7 +164,7 @@ const Property = ({ record }: PropertyProps) => {
       <div>
         <Flex justify="space-between" align="center">
           <div style={{ fontSize: 16, fontWeight: 600, margin: '16px 0' }}>
-          【{record?.name}】相关属性
+            【{record?.name}】相关属性
           </div>
         </Flex>
       </div>
@@ -149,7 +188,7 @@ const Property = ({ record }: PropertyProps) => {
           }
         }
         value={dataSource}
-        onChange={setDataSource}
+        onChange={(v) => { setDataSource(v); console.log("v")}}
         editable={{
           type: 'multiple',
           editableKeys,
@@ -171,6 +210,11 @@ export default function FactPage() {
   const [openProperty, setOpenProperty] = useState<{ open: boolean, record: null | DataType }>({ open: false, record: null });
   const [title, setTitle] = useState("创建事实");
 
+  const onOpen = () => {
+    form.resetFields();
+    setOpen(true);
+  }
+
   const onEdit = (record: DataType) => {
     setTitle("编辑事实")
     form.setFieldsValue({
@@ -185,7 +229,6 @@ export default function FactPage() {
   }
 
   const onCreate = (data: DataType) => {
-    console.log("receive: ", data);
     let createRecords = [...record];
 
     if (data.id === undefined) {
@@ -203,7 +246,6 @@ export default function FactPage() {
         return record;
       })
     }
-    console.log()
     setRecords(createRecords);
     setOpen(false);
   }
@@ -242,11 +284,11 @@ export default function FactPage() {
 
   return (
     <>
-      <Flex justify='flex-end' style={{marginBottom: '13px'}}>
-        <Button type="primary" onClick={() => setOpen(true)}>新增事实</Button>
+      <Flex justify='flex-end' style={{ marginBottom: '13px' }}>
+        <Button type="primary" onClick={() => onOpen()}>新增事实</Button>
       </Flex>
       <Space size={'small'}></Space>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={record} />
       <Modal
         forceRender
         open={open}
@@ -258,7 +300,7 @@ export default function FactPage() {
         destroyOnClose
         modalRender={(dom) => (
           <Form layout="vertical" form={form} name="form_in_modal"
-            initialValues={{ modifier: 'public' }} clearOnDestroy
+            clearOnDestroy
             onFinish={(values) => onCreate(values)}>
             {dom}
           </Form>
@@ -267,8 +309,11 @@ export default function FactPage() {
         <Form.Item name="id" label="id" hidden>
           <Input hidden />
         </Form.Item>
-        <Form.Item name="description" label="版本说明" rules={[{ required: true, message: '请输入版本说明' }]}>
-          <Input.TextArea rows={4} placeholder="请输入版本说明" />
+        <Form.Item name="code" label="事实编码" rules={[{ required: true, message: '请输入事实编码' }]}>
+          <Input.TextArea rows={4} placeholder="请输入事实编码" />
+        </Form.Item>
+        <Form.Item name="name" label="事实名称" rules={[{ required: true, message: '请输入事实名称' }]}>
+          <Input.TextArea rows={4} placeholder="请输入事实名称" />
         </Form.Item>
       </Modal>
       <Drawer title='属性' width={1200} onClose={() => setOpenProperty({ open: false, record: null })} open={openProperty.open}

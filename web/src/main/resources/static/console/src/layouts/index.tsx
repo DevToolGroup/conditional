@@ -33,6 +33,7 @@ export default function Layout() {
   return (
     <ProLayout
       layout='top'
+      fixedHeader={true}
       logo={false}
       title="规则引擎"
       avatarProps={{

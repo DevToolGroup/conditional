@@ -1,4 +1,4 @@
-import { Button, Col, Drawer, Flex, Form, Input, Modal, Row, Select, Space, Table, TableProps, Tag, theme } from 'antd';
+import { Button, Flex, Form, Input, Modal, Select, Space, Table, TableProps } from 'antd';
 import { useState } from 'react';
 
 interface Return {
@@ -29,12 +29,16 @@ const data: Return[] = [
   },
 ];
 
-
 export default function ReturnPage() {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const [record, setRecords] = useState<Return[]>(data);
   const [title, setTitle] = useState("创建结果");
+
+  const onOpen = () => {
+    form.resetFields();
+    setOpen(true);
+  }
 
   const onCreate = (data: Return) => {
     let createRecords = [...record];
@@ -103,7 +107,7 @@ export default function ReturnPage() {
   return (
     <>
       <Flex justify='flex-end' style={{ marginBottom: '13px' }}>
-        <Button type="primary" onClick={() => setOpen(true)}>新增结果</Button>
+        <Button type="primary" onClick={() => onOpen()}>新增结果</Button>
       </Flex>
       <Table columns={columns} dataSource={data} />
       <Modal
@@ -126,11 +130,15 @@ export default function ReturnPage() {
         <Form.Item name="id" label="id" hidden>
           <Input hidden />
         </Form.Item>
-        <Form.Item name="code" label="返回结果编码" rules={[{ required: true, message: '请输入返回结果编码' }]}>
-          <Input placeholder="请输入返回结果编码" />
+        <Form.Item name="code" label="结果编码" rules={[{ required: true, message: '请输入结果编码' }]}>
+          <Input placeholder="请输入结果编码" />
         </Form.Item>
-        <Form.Item name="type" label="描述" rules={[{ required: true, message: '请输入返回结果描述' }]}>
-        <Input placeholder="请输入返回结果描述" />
+        <Form.Item name="type" label="结果类型" rules={[{ required: true, message: '请输入结果类型' }]}>
+          <Select placeholder="请输入结果类型" options={[
+            { value: 'User', label: '用户' },
+            { value: 'Order', label: '订单' },
+          ]}>
+          </Select>
         </Form.Item>
       </Modal>
     </>
