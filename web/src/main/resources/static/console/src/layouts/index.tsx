@@ -1,6 +1,5 @@
 import { PageContainer, ProBreadcrumb, ProCard, ProLayout } from '@ant-design/pro-components';
-import debug from '@umijs/utils/compiled/debug';
-import { Link, Outlet, useAppData, useLocation, history } from 'umi';
+import { Link, Outlet, useLocation } from 'umi';
 
 export default function Layout() {
   const location = useLocation();
@@ -17,11 +16,9 @@ export default function Layout() {
     } else {
       items.push({ path: '/rule', title: '规则' });
     }
-    console.log(items);
     return items;
   }
   function itemRender(currentRoute: any, params: any, items: any, paths: any) {
-    console.log("paths", paths.join("/"))
     const isLast = currentRoute?.path === items[items.length - 1]?.path;
     return isLast ? (
       <span>{currentRoute.title}</span>
@@ -44,12 +41,7 @@ export default function Layout() {
       <PageContainer title={false} breadcrumbRender={() => {
         return <ProBreadcrumb itemRender={itemRender} items={items} />;
       }}>
-        <ProCard
-          style={{
-            minHeight: '80vh',
-            maxHeight: '100vh',
-          }}
-        >
+        <ProCard>
           <Outlet />
         </ProCard>
       </PageContainer>

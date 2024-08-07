@@ -14,33 +14,31 @@ export default defineConfig({
     },
     {
       path: "/rule/:ruleId/version/:versionId/design",
-      component: "design",
+      component: "design/index",
       name: "规则设计",
       routes: [
         {
           path: "factClass",
-          component: "factClass",
+          component: "design/factClass",
         },
         {
           path: "argumentClass",
-          component: "argumentClass"
+          component: "design/argumentClass"
         },
         {
           path: "returnClass",
-          component: "returnClass"
+          component: "design/returnClass"
         },
         {
           path: "variableClass",
-          component: "variableClass"
+          component: "design/variableClass"
         },
         {
           path: "conditionClass",
-          component: "conditionClass"
+          component: "design/conditionClass"
         },
       ]
     },
-    { path: '/condition', component: 'expression' },
-    { path: '/expression', component: 'expr' },
     { path: '/', redirect: '/rule' },
   ],
   plugins: ["@umijs/plugins/dist/react-query"],

@@ -24,7 +24,7 @@ const tabs: TabsProps['items'] = [
     label: '条件定义',
   },
 ];
-export default function DesignPage() {
+const DesignPage = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const match = useMatch('/rule/:ruleId/version/:versionId/design/:class')
@@ -53,3 +53,5 @@ export default function DesignPage() {
     </>
   )
 }
+
+export default DesignPage;
