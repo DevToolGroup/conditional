@@ -2,7 +2,6 @@ package group.devtool.conditional.web.controller;
 
 import group.devtool.conditional.web.response.RuleClassVersionResponse;
 import group.devtool.conditional.web.service.RuleClassService;
-import group.devtool.condition.web.request.*;
 import group.devtool.conditional.web.response.RuleClassResponse;
 import group.devtool.conditional.web.request.RuleClassRequest;
 import org.springframework.beans.factory.annotation.Autowired;

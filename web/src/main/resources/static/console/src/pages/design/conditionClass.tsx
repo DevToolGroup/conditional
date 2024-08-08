@@ -1,10 +1,8 @@
 import { Button, Card, Col, Flex, Row, Select, Skeleton, Space, Table, Tag } from "antd";
-import { lazy, useState } from "react";
+import { useState } from "react";
 import {
   Types, ComposeData, ExpressionData,
-  VariableExpressionModal, ConditionExpressionModal, ActionExpressionModal,
-  FunctionData
-} from "./expression";
+  VariableExpressionModal, ConditionExpressionModal, ActionExpressionModal} from "./expression";
 import {
   EditOutlined,
   CloseOutlined

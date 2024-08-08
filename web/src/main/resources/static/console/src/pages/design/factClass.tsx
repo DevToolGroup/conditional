@@ -1,9 +1,9 @@
-import { EditableProTable, ProCard, ProColumns, ProFormField } from "@ant-design/pro-components";
-import { Button, Col, Drawer, Flex, Form, GetRef, Input, InputRef, Modal, Popconfirm, Row, Space, Table, TableProps, Typography } from "antd";
-import React, { useContext, useEffect, useRef } from "react";
+import { EditableProTable, ProColumns } from "@ant-design/pro-components";
+import { Button, Drawer, Flex, Form, Input, Modal, Space, Table, TableProps } from "antd";
+import React from "react";
 import { useState } from 'react';
 
-interface DataType {
+interface Fact {
   id: number;
   key: number;
   code: string;
@@ -43,7 +43,7 @@ const TypeEnum = {
   }
 }
 
-const data: DataType[] = [
+const data: Fact[] = [
   {
     id: 1,
     key: 1,
@@ -93,7 +93,7 @@ const properties: PropertyType[] = [
 
 
 interface PropertyProps {
-  record: DataType | null
+  record: Fact | null
 }
 
 const waitTime = (time: number = 100) => {
@@ -207,7 +207,7 @@ export default function FactPage() {
   const [form] = Form.useForm();
   const [record, setRecords] = useState(data);
   const [open, setOpen] = useState(false);
-  const [openProperty, setOpenProperty] = useState<{ open: boolean, record: null | DataType }>({ open: false, record: null });
+  const [openProperty, setOpenProperty] = useState<{ open: boolean, record: null | Fact }>({ open: false, record: null });
   const [title, setTitle] = useState("创建事实");
 
   const onOpen = () => {
@@ -215,7 +215,7 @@ export default function FactPage() {
     setOpen(true);
   }
 
-  const onEdit = (record: DataType) => {
+  const onEdit = (record: Fact) => {
     setTitle("编辑事实")
     form.setFieldsValue({
       ...record,
@@ -228,7 +228,7 @@ export default function FactPage() {
     setRecords(data => data.filter(item => item.id !== id));
   }
 
-  const onCreate = (data: DataType) => {
+  const onCreate = (data: Fact) => {
     let createRecords = [...record];
 
     if (data.id === undefined) {
@@ -250,7 +250,7 @@ export default function FactPage() {
     setOpen(false);
   }
 
-  const columns: TableProps<DataType>['columns'] = [
+  const columns: TableProps<Fact>['columns'] = [
     {
       title: '序号',
       width: '5%',

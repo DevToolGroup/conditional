@@ -1,6 +1,6 @@
 import { Tabs, TabsProps } from "antd";
 
-import { Outlet, useMatch, useSearchParams, history, useLocation } from "umi";
+import { Outlet, useMatch, useSearchParams, history, useLocation } from "@umijs/max";
 
 const tabs: TabsProps['items'] = [
   {
@@ -35,7 +35,7 @@ const DesignPage = () => {
   }
   const onChange = (tab: string) => {
     let path = '/rule/' + match?.params.ruleId + '/version/' + match?.params.versionId + '/design/' + tab;
-    history.push(path);
+    history.push(path, );
   }
 
   return (

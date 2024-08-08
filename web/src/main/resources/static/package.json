@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@ant-design/pro-components": "^2.7.14",
-    "@umijs/plugins": "^4.3.10",
-    "antd": "^5.19.4",
-    "axios": "^1.7.2"
-  }
-}

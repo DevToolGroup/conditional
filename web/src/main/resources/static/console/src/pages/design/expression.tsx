@@ -32,8 +32,6 @@ const logicValueOpts: Option[] = [
 ]
 
 const variableOpts: Option[] = [
-  { value: 'argument', label: '参数' },
-  { value: 'variable', label: '变量' },
   { value: 'compare', label: '比较' },
   { value: 'logic', label: '逻辑' },
   { value: 'arith', label: '运算' },

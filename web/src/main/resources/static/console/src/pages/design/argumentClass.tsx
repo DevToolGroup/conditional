@@ -1,7 +1,7 @@
 import { Button, Flex, Form, Input, Modal, Select, Space, Table, TableProps } from 'antd';
 import { useState } from 'react';
 
-interface DataType {
+interface Argument {
   id: number;
   key: number;
   code: string;
@@ -9,7 +9,7 @@ interface DataType {
   typeName: string;
 }
 
-const data: DataType[] = [
+const data: Argument[] = [
   {
     id: 1,
     key: 1,
@@ -45,7 +45,7 @@ export default function ArgumentPage() {
     setOpen(true);
   }
 
-  const onEdit = (record: DataType) => {
+  const onEdit = (record: Argument) => {
     setTitle("编辑事实")
     form.setFieldsValue({
       ...record,
@@ -53,7 +53,7 @@ export default function ArgumentPage() {
     setOpen(true);
   }
 
-  const onCreate = (data: DataType) => {
+  const onCreate = (data: Argument) => {
     console.log('receive data: ', data);
     let createRecords = [...record];
 
@@ -82,7 +82,7 @@ export default function ArgumentPage() {
     setRecords(data => data.filter(item => item.id !== id));
   }
 
-  const columns: TableProps<DataType>['columns'] = [
+  const columns: TableProps<Argument>['columns'] = [
     {
       title: '序号',
       dataIndex: 'id',
